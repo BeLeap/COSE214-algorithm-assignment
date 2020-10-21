@@ -1,0 +1,1 @@
+add_executable(efficient_convex_hull efficient_convex_hull.c)
