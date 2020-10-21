@@ -172,3 +172,5 @@ vignettes/*.pdf
 *.code-workspace
 
 # End of https://www.toptal.com/developers/gitignore/api/vscode,c++,r,images,cmake
+
+build/
