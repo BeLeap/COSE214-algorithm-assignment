@@ -190,13 +190,13 @@ LineEquation generateLineFromTwoPoints(t_point from, t_point to) {
 
 t_point findFarthestPoint(LineEquation line, t_point* points, int num_points) {
   t_point farthestPoint;
-  float maxDistance = 0;
+  float maxDistance = -1;
   for (int i = 0; i < num_points; ++i) {
-    float dist = distance(line.a, line.b, line.c, points[i]);
+    float dist = distance(line.a, line.b, line.c, *(points + i));
 
     if (dist > maxDistance) {
       maxDistance = dist;
-      farthestPoint = points[i];
+      farthestPoint = *(points + i);
     }
   }
 
@@ -205,39 +205,58 @@ t_point findFarthestPoint(LineEquation line, t_point* points, int num_points) {
 
 t_line* upper_hull(t_point* points, int num_point, t_point p1, t_point pn,
                    t_line* lines, int* num_line, int* capacity) {
-  if (num_point < 3) {
-    (*num_line)++;
+  if (num_point == 0) {
     t_line line;
-    line.from = points[0];
-    line.to = points[1];
-    return &line;
+    line.from = p1;
+    line.to = pn;
+
+    (*num_line)++;
+    if (*num_line > *capacity) {
+      *capacity *= 2;
+      lines = (t_line*)realloc(lines, sizeof(t_line) * *capacity);
+      fprintf(stderr, "realloc(%d)\n", *capacity);
+    }
+    *(lines + *num_line - 1) = line;
+
+    return lines;
   }
 
   LineEquation extreamLine = generateLineFromTwoPoints(p1, pn);
-
   t_point farthestPoint = findFarthestPoint(extreamLine, points, num_point);
+
+  LineEquation leftLine = generateLineFromTwoPoints(p1, farthestPoint);
 
   int n1 = 0;
   int n2 = 0;
   t_point* s1 = (t_point*)malloc(sizeof(t_point) * num_point);
   t_point* s2 = (t_point*)malloc(sizeof(t_point) * num_point);
 
-  separate_points(points, num_point, p1, pn, s1, s2, &n1, &n2);
+  separate_points(points, num_point, p1, farthestPoint, s1, s2, &n1, &n2);
 
-  upper_hull(s1, n1, p1, farthestPoint, lines, num_line, capacity);
-  upper_hull(s2, n2, farthestPoint, pn, lines, num_line, capacity);
+  lines = upper_hull(s1, n1, p1, farthestPoint, lines, num_line, capacity);
 
-  /* TODO */
+  LineEquation rightLine = generateLineFromTwoPoints(farthestPoint, pn);
+  separate_points(points, num_point, farthestPoint, pn, s1, s2, &n1, &n2);
+
+  lines = upper_hull(s1, n1, farthestPoint, pn, lines, num_line, capacity);
 
   free(s1);
   free(s2);
+
+  return lines;
 }
 
 float distance(float a, float b, float c, t_point p) {
   int x = p.x;
   int y = p.y;
 
-  return (float)(a * x + b * y - c) / (float)(a * a + b * b);
+  float mother = a * x + b * y - c;
+  if (mother < 0) {
+    mother = -mother;
+  }
+  float son = a * a + b * b;
+
+  return mother / son;
 }
 
 #define TRUE 1
@@ -260,16 +279,18 @@ BOOL isUpper(LineEquation line, t_point point) {
 void separate_points(t_point* points, int num_point, t_point from, t_point to,
                      t_point* s1, t_point* s2, int* n1, int* n2) {
   LineEquation line = generateLineFromTwoPoints(from, to);
+  *n1 = 0;
+  *n2 = 0;
 
   for (int i = 0; i < num_point; ++i) {
-    BOOL isUp = isUpper(line, points[i]);
+    BOOL isUp = isUpper(line, *(points + i));
 
     if (isUp == TRUE) {
-      *n1++;
-      s1[(*n1) - 1] = points[i];
+      (*n1)++;
+      *(s1 + (*n1) - 1) = *(points + i);
     } else if (isUp == FALSE) {
-      *n2++;
-      s2[(*n2) - 1] = points[i];
+      (*n2)++;
+      *(s2 + (*n2) - 1) = *(points + i);
     }
   }
 }
