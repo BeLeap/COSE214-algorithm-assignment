@@ -94,4 +94,11 @@ int main( int argc, char **argv)
 	return 0;
 }
 
-
+void print_graph(int graph[][16], int num) {
+	for (int row = 0; row < 16; ++row) {
+		for (int col = 0; col < num; ++col) {
+			printf("%d ", graph[col][row]);
+		}
+		printf("/n");
+	}
+}
