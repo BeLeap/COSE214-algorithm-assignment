@@ -100,6 +100,8 @@ typedef int BOOL;
 #define FALSE 0;
 #define UNDEF -1;
 
+#define INT_MAX 2147483647;
+
 struct twoDimensionalArrayHandlers;
 
 typedef struct twoDimensionalArray {
@@ -202,28 +204,47 @@ TwoDimensionalArray InitMatrix(int n, int m) {
 }
 
 int InsertCharacter(TwoDimensionalArray matrix, int row, int col) {
-  return matrix.handler->read(&matrix, row - 1, col) + INSERT_COST;
+  return (matrix.handler->read(&matrix, row - 1, col) + INSERT_COST) *
+         INSERT_OP;
 }
 
 int DeleteCharacter(TwoDimensionalArray matrix, int row, int col) {
-  return matrix.handler->read(&matrix, row, col - 1) + DELETE_COST;
+  return (matrix.handler->read(&matrix, row, col - 1) + DELETE_COST) *
+         DELETE_OP;
 }
 
-int SubstitueCharacter(TwoDimensionalArray matrix, int row, int col, char *str1,
-                       char *str2) {
+int SubstituteCharacter(TwoDimensionalArray matrix, int row, int col,
+                        char *str1, char *str2) {
   if (str1[row] == str2[col]) {
-    return matrix.handler->read(&matrix, row - 1, col - 1);
+    return matrix.handler->read(&matrix, row - 1, col - 1) * SUBSTITUTE_OP;
   }
-  return matrix.handler->read(&matrix, row - 1, col - 1) + SUBSTITUTE_COST;
+  return (matrix.handler->read(&matrix, row - 1, col - 1) + SUBSTITUTE_COST) *
+         SUBSTITUTE_OP;
+}
+
+int GetMinimumValue(int ins, int del, int sub) {
+  int ins_value = ins / INSERT_OP ? ins / INSERT_OP : INT_MAX;
+  int del_value = del / DELETE_OP ? del / DELETE_OP : INT_MAX;
+  int sub_value = sub / SUBSTITUTE_OP ? sub / SUBSTITUTE_OP : INT_MAX;
+
+  int min_value = __GetMin3(ins_value, del_value, sub_value);
+
+  if (min_value == ins_value) {
+    return ins;
+  } else if (min_value == del_value) {
+    return del;
+  } else {
+    return sub;
+  }
 }
 
 void InsertEditDistanceToMatrix(TwoDimensionalArray matrix, int row, int col,
                                 char *str1, char *str2) {
   int ins = InsertCharacter(matrix, row, col);
   int del = DeleteCharacter(matrix, row, col);
-  int sub = SubstitueCharacter(matrix, row, col, str1, str2);
+  int sub = SubstituteCharacter(matrix, row, col, str1, str2);
 
-  int min = __GetMin3(ins, del, sub);
+  int min = GetMinimumValue(ins, del, sub);
   matrix.handler->write(&matrix, row, col, min);
 }
 
