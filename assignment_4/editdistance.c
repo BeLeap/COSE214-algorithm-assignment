@@ -88,7 +88,7 @@ int main() {
     printf("%s vs. %s\n", str1, str2);
     printf("==============================\n");
 
-    // distance = min_editdistance( str1, str2);
+    distance = min_editdistance(str1, str2);
 
     // printf( "\nMinEdit(%s, %s) = %d\n", str1, str2, distance);
   }
@@ -102,180 +102,24 @@ typedef int BOOL;
 
 #define INT_MAX 2147483647;
 
-struct twoDimensionalArrayHandlers;
-
-typedef struct twoDimensionalArray {
-  int *matrix;
-  int row;
-  int col;
-
-  const struct twoDimensionalArrayHandlers *handler;
-} TwoDimensionalArray;
-
-BOOL _TwoDimensionalArrayCreate(twoDimensionalArray *matrix, int row, int col) {
-  matrix->matrix = (int *)malloc(sizeof(int) * row * col);
-
-  if (matrix->matrix == NULL) {
-    return FALSE;
-  }
-
-  matrix->row = row;
-  matrix->col = col;
-  return TRUE;
-}
-
-BOOL _TwoDimensionalArrayCheckIndex(twoDimensionalArray *matrix, int row,
-                                    int col) {
-  if (row > matrix->row || col > matrix->col || row < 0 || col < 0) {
-    return FALSE;
-  }
-  return TRUE;
-}
-
-BOOL _TwoDimensionalArrayWrite(twoDimensionalArray *matrix, int row, int col,
-                               int value) {
-  if (!(matrix->handler->_checkIndex(matrix, row, col))) {
-    return FALSE;
-  }
-
-  *((matrix->matrix) + (row * (matrix->col)) + col) = value;
-  return TRUE;
-}
-
-int _TwoDimensionalArrayRead(twoDimensionalArray *matrix, int row, int col) {
-  if (!(matrix->handler->_checkIndex(matrix, row, col))) {
-    return FALSE;
-  }
-
-  return *((matrix->matrix) + (row * (matrix->col)) + col);
-}
-
-BOOL _TwoDimensionalArrayDestroy(twoDimensionalArray *matrix) {
-  free(matrix->matrix);
-  return TRUE;
-}
-
-BOOL _TwoDimensionalArrayCopy(twoDimensionalArray *fromMatrix,
-                              twoDimensionalArray *toMatrix) {
-  if (fromMatrix->row != toMatrix->row || fromMatrix->col != toMatrix->col) {
-    return FALSE;
-  }
-}
-
-typedef struct twoDimensionalArrayHandlers {
-  // Allocate the appropriate amount of memory for matrix.
-  BOOL(*create)
-  (twoDimensionalArray *, int rowSize,
-   int colSize) = _TwoDimensionalArrayCreate;
-
-  // Check row and col
-  BOOL(*_checkIndex)
-  (twoDimensionalArray *, int row, int col) = _TwoDimensionalArrayCheckIndex;
-
-  // Place the value received in the appropriate position of the matrix.
-  BOOL(*write)
-  (twoDimensionalArray *, int row, int col,
-   int value) = _TwoDimensionalArrayWrite;
-
-  // Read element from matrix.
-  int (*read)(twoDimensionalArray *, int row,
-              int col) = _TwoDimensionalArrayRead;
-
-  // Free the matrix.
-  BOOL (*destroy)(twoDimensionalArray *) = _TwoDimensionalArrayDestroy;
-
-  // Copy matrix.
-  BOOL(*copy)
-  (twoDimensionalArray *fromMatrix,
-   twoDimensionalArray *toMatrix) = _TwoDimensionalArrayCopy;
-};
-
-TwoDimensionalArray InitMatrix(int n, int m) {
-  TwoDimensionalArray matrix;
-  matrix.handler->create(&matrix, n, m);
-
-  for (int row = 0; row < n; ++row) {
-    matrix.handler->insert(&matrix, row, 0, row);
-  }
-
-  for (int col = 0; col < m; ++col) {
-    matrix.handler->insert(&matrix, 0, col, col);
-  }
-}
-
-int InsertCharacter(TwoDimensionalArray matrix, int row, int col) {
-  return (matrix.handler->read(&matrix, row - 1, col) + INSERT_COST) *
-         INSERT_OP;
-}
-
-int DeleteCharacter(TwoDimensionalArray matrix, int row, int col) {
-  return (matrix.handler->read(&matrix, row, col - 1) + DELETE_COST) *
-         DELETE_OP;
-}
-
-int SubstituteCharacter(TwoDimensionalArray matrix, int row, int col,
-                        char *str1, char *str2) {
-  if (str1[row] == str2[col]) {
-    return matrix.handler->read(&matrix, row - 1, col - 1) * SUBSTITUTE_OP;
-  }
-  return (matrix.handler->read(&matrix, row - 1, col - 1) + SUBSTITUTE_COST) *
-         SUBSTITUTE_OP;
-}
-
-int GetMinimumValue(int ins, int del, int sub) {
-  int ins_value = ins / INSERT_OP ? ins / INSERT_OP : INT_MAX;
-  int del_value = del / DELETE_OP ? del / DELETE_OP : INT_MAX;
-  int sub_value = sub / SUBSTITUTE_OP ? sub / SUBSTITUTE_OP : INT_MAX;
-
-  int min_value = __GetMin3(ins_value, del_value, sub_value);
-
-  if (min_value == ins_value) {
-    return ins;
-  } else if (min_value == del_value) {
-    return del;
-  } else {
-    return sub;
-  }
-}
-
-void InsertEditDistanceToMatrix(TwoDimensionalArray matrix, int row, int col,
-                                char *str1, char *str2) {
-  int ins = InsertCharacter(matrix, row, col);
-  int del = DeleteCharacter(matrix, row, col);
-  int sub = SubstituteCharacter(matrix, row, col, str1, str2);
-
-  int min = GetMinimumValue(ins, del, sub);
-  matrix.handler->write(&matrix, row, col, min);
-}
-
-TwoDimensionalArray BuildEditDistanceMatrix(char *str1, char *str2) {
-  int n = strlen(str1);
-  int m = strlen(str2);
-
-  TwoDimensionalArray matrix;
-  matrix = InitMatrix(n + 1, m + 1);
-
-  for (int row = 1; row < matrix.row; ++row) {
-    for (int col = 1; col < matrix.col; ++col) {
-      if (row == col) {
-        InsertEditDistanceToMatrix(matrix, row, col, str1, str2);
-      }
-    }
-  }
-
-  matrix.handler->destroy(&matrix);
-}
-
 int min_editdistance(char *str1, char *str2) {
   int n = strlen(str1);
   int m = strlen(str2);
 
   int i, j;
-  int d[n + 1][m + 1];
-  int op_matrix[(n + 1) * (m + 1)];
 
-  /* TODO */
+  int d[m + 1][n + 1];
+  char op_matrix[(m + 1) * (n + 1)];
 
-  print_matrix(op_matrix, m + 1, n, m);
-  backtrace(op_matrix, m + 1, str1, str2, n, m);
+  // print_matrix(op_matrix, m + 1, n, m);
+  // backtrace(op_matrix.matrix, m + 1, str1, str2, n, m);
+}
+
+void print_matrix(int *op_matrix, int col_size, int n, int m) {
+  for (int row = m; row > 0; --row) {
+    for (int col = 0; col < n; ++col) {
+      printf("%4d", *(op_matrix + (row * col_size) + col));
+    }
+    printf("\n");
+  }
 }
