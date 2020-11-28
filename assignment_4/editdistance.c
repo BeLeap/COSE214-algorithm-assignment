@@ -184,7 +184,8 @@ typedef struct twoDimensionalArrayHandlers {
 
   // Copy matrix.
   BOOL(*copy)
-  (twoDimensionalArray *, twoDimensionalArray *) = _TwoDimensionalArrayCopy;
+  (twoDimensionalArray *fromMatrix,
+   twoDimensionalArray *toMatrix) = _TwoDimensionalArrayCopy;
 };
 
 TwoDimensionalArray InitMatrix(int n, int m) {
@@ -206,6 +207,8 @@ TwoDimensionalArray BuildEditDistanceMatrix(char *str1, char *str2) {
 
   TwoDimensionalArray matrix;
   matrix = InitMatrix(n, m);
+
+  matrix.handler->destroy(&matrix);
 }
 
 int min_editdistance(char *str1, char *str2) {
