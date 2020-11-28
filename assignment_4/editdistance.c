@@ -95,6 +95,119 @@ int main() {
   return 0;
 }
 
+typedef int BOOL;
+#define TRUE 1;
+#define FALSE 0;
+#define UNDEF -1;
+
+struct twoDimensionalArrayHandlers;
+
+typedef struct twoDimensionalArray {
+  int *matrix;
+  int row;
+  int col;
+
+  const struct twoDimensionalArrayHandlers *handler;
+} TwoDimensionalArray;
+
+BOOL _TwoDimensionalArrayCreate(twoDimensionalArray *matrix, int row, int col) {
+  matrix->matrix = (int *)malloc(sizeof(int) * row * col);
+
+  if (matrix->matrix == NULL) {
+    return FALSE;
+  }
+
+  matrix->row = row;
+  matrix->col = col;
+  return TRUE;
+}
+
+BOOL _TwoDimensionalArrayCheckIndex(twoDimensionalArray *matrix, int row,
+                                    int col) {
+  if (row > matrix->row || col > matrix->col || row < 0 || col < 0) {
+    return FALSE;
+  }
+  return TRUE;
+}
+
+BOOL _TwoDimensionalArrayInsert(twoDimensionalArray *matrix, int row, int col,
+                                int value) {
+  if (!(matrix->handler->_checkIndex(matrix, row, col))) {
+    return FALSE;
+  }
+
+  *((matrix->matrix) + (row * (matrix->col)) + col) = value;
+  return TRUE;
+}
+
+int _TwoDimensionalArrayRead(twoDimensionalArray *matrix, int row, int col) {
+  if (!(matrix->handler->_checkIndex(matrix, row, col))) {
+    return FALSE;
+  }
+
+  return *((matrix->matrix) + (row * (matrix->col)) + col);
+}
+
+BOOL _TwoDimensionalArrayDestroy(twoDimensionalArray *matrix) {
+  free(matrix->matrix);
+  return TRUE;
+}
+
+BOOL _TwoDimensionalArrayCopy(twoDimensionalArray *fromMatrix,
+                              twoDimensionalArray *toMatrix) {
+  if (fromMatrix->row != toMatrix->row || fromMatrix->col != toMatrix->col) {
+    return FALSE;
+  }
+}
+
+typedef struct twoDimensionalArrayHandlers {
+  // Allocate the appropriate amount of memory for matrix.
+  BOOL(*create)
+  (twoDimensionalArray *, int rowSize,
+   int colSize) = _TwoDimensionalArrayCreate;
+
+  // Check row and col
+  BOOL(*_checkIndex)
+  (twoDimensionalArray *, int row, int col) = _TwoDimensionalArrayCheckIndex;
+
+  // Place the value received in the appropriate position of the matrix.
+  BOOL(*insert)
+  (twoDimensionalArray *, int row, int col,
+   int value) = _TwoDimensionalArrayInsert;
+
+  // Read element from matrix.
+  int (*read)(twoDimensionalArray *, int row,
+              int col) = _TwoDimensionalArrayRead;
+
+  // Free the matrix.
+  BOOL (*destroy)(twoDimensionalArray *) = _TwoDimensionalArrayDestroy;
+
+  // Copy matrix.
+  BOOL(*copy)
+  (twoDimensionalArray *, twoDimensionalArray *) = _TwoDimensionalArrayCopy;
+};
+
+TwoDimensionalArray InitMatrix(int n, int m) {
+  TwoDimensionalArray matrix;
+  matrix.handler->create(&matrix, n, m);
+
+  for (int row = 0; row < n; ++row) {
+    matrix.handler->insert(&matrix, row, 0, row);
+  }
+
+  for (int col = 0; col < m; ++col) {
+    matrix.handler->insert(&matrix, 0, col, col);
+  }
+}
+
+TwoDimensionalArray BuildEditDistanceMatrix(char *str1, char *str2) {
+  int n = strlen(str1);
+  int m = strlen(str2);
+
+  TwoDimensionalArray matrix;
+  matrix = InitMatrix(n, m);
+}
+
 int min_editdistance(char *str1, char *str2) {
   int n = strlen(str1);
   int m = strlen(str2);
