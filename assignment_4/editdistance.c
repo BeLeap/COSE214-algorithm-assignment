@@ -130,8 +130,8 @@ BOOL _TwoDimensionalArrayCheckIndex(twoDimensionalArray *matrix, int row,
   return TRUE;
 }
 
-BOOL _TwoDimensionalArrayInsert(twoDimensionalArray *matrix, int row, int col,
-                                int value) {
+BOOL _TwoDimensionalArrayWrite(twoDimensionalArray *matrix, int row, int col,
+                               int value) {
   if (!(matrix->handler->_checkIndex(matrix, row, col))) {
     return FALSE;
   }
@@ -171,9 +171,9 @@ typedef struct twoDimensionalArrayHandlers {
   (twoDimensionalArray *, int row, int col) = _TwoDimensionalArrayCheckIndex;
 
   // Place the value received in the appropriate position of the matrix.
-  BOOL(*insert)
+  BOOL(*write)
   (twoDimensionalArray *, int row, int col,
-   int value) = _TwoDimensionalArrayInsert;
+   int value) = _TwoDimensionalArrayWrite;
 
   // Read element from matrix.
   int (*read)(twoDimensionalArray *, int row,
@@ -201,12 +201,46 @@ TwoDimensionalArray InitMatrix(int n, int m) {
   }
 }
 
+int InsertCharacter(TwoDimensionalArray matrix, int row, int col) {
+  return matrix.handler->read(&matrix, row - 1, col) + INSERT_COST;
+}
+
+int DeleteCharacter(TwoDimensionalArray matrix, int row, int col) {
+  return matrix.handler->read(&matrix, row, col - 1) + DELETE_COST;
+}
+
+int SubstitueCharacter(TwoDimensionalArray matrix, int row, int col, char *str1,
+                       char *str2) {
+  if (str1[row] == str2[col]) {
+    return matrix.handler->read(&matrix, row - 1, col - 1);
+  }
+  return matrix.handler->read(&matrix, row - 1, col - 1) + SUBSTITUTE_COST;
+}
+
+void InsertEditDistanceToMatrix(TwoDimensionalArray matrix, int row, int col,
+                                char *str1, char *str2) {
+  int ins = InsertCharacter(matrix, row, col);
+  int del = DeleteCharacter(matrix, row, col);
+  int sub = SubstitueCharacter(matrix, row, col, str1, str2);
+
+  int min = __GetMin3(ins, del, sub);
+  matrix.handler->write(&matrix, row, col, min);
+}
+
 TwoDimensionalArray BuildEditDistanceMatrix(char *str1, char *str2) {
   int n = strlen(str1);
   int m = strlen(str2);
 
   TwoDimensionalArray matrix;
-  matrix = InitMatrix(n, m);
+  matrix = InitMatrix(n + 1, m + 1);
+
+  for (int row = 1; row < matrix.row; ++row) {
+    for (int col = 1; col < matrix.col; ++col) {
+      if (row == col) {
+        InsertEditDistanceToMatrix(matrix, row, col, str1, str2);
+      }
+    }
+  }
 
   matrix.handler->destroy(&matrix);
 }
