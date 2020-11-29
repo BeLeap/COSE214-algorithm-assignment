@@ -10,8 +10,8 @@
 
 #define INSERT_COST 1
 #define DELETE_COST 1
-#define SUBSTITUTE_COST 1
-#define TRANSPOSE_COST 1
+#define SUBSTITUTE_COST 2
+#define TRANSPOSE_COST 2
 
 // 재귀적으로 연산자 행렬을 순회하며, 두 문자열이 최소편집거리를 갖는 모든
 // 가능한 정렬(alignment) 결과를 출력한다. op_matrix : 이전 상태의 연산자 정보가
@@ -95,12 +95,12 @@ int main() {
   return 0;
 }
 
-typedef int BOOL;
-#define TRUE 1;
-#define FALSE 0;
-#define UNDEF -1;
+#define DEBUG 0
 
-#define INT_MAX 2147483647;
+typedef int BOOL;
+#define TRUE 1
+#define FALSE 0
+#define UNDEF -1
 
 int min_editdistance(char *str1, char *str2) {
   int n = strlen(str1);
@@ -108,17 +108,94 @@ int min_editdistance(char *str1, char *str2) {
 
   int i, j;
 
-  int d[m + 1][n + 1];
-  char op_matrix[(m + 1) * (n + 1)];
+  int d[n + 1][m + 1];
+  int op_matrix[(n + 1) * (m + 1)];
 
-  // print_matrix(op_matrix, m + 1, n, m);
+  // Zero-fill
+  for (int col = 0; col < m + 1; ++col) {
+    for (int row = 0; row < n + 1; ++row) {
+      d[row][col] = 0;
+      op_matrix[(row * (m + 1)) + col] = 0;
+    }
+  }
+
+  // Initialize Matrix
+  for (int col = 0; col < m + 1; ++col) {
+    d[0][col] = col;
+    op_matrix[col] |= INSERT_OP;
+  }
+
+  for (int row = 0; row < n + 1; ++row) {
+    d[row][0] = row;
+    op_matrix[(row * (m + 1))] |= DELETE_OP;
+  }
+  op_matrix[0] = 0;
+
+  // Build Distance Matrix
+  for (int col = 1; col < m + 1; ++col) {
+    for (int row = 1; row < n + 1; ++row) {
+      int ins = d[row - 1][col] + INSERT_COST;
+      int del = d[row][col - 1] + DELETE_COST;
+      int sub = d[row - 1][col - 1] +
+                (str1[row - 1] == str2[col - 1] ? 0 : SUBSTITUTE_COST);
+
+      int min = __GetMin3(ins, del, sub);
+
+      if (ins == min) {
+        op_matrix[(row * (m + 1)) + col] |= INSERT_OP;
+      }
+
+      if (del == min) {
+        op_matrix[(row * (m + 1)) + col] |= DELETE_OP;
+      }
+
+      if (sub == min) {
+        if (str1[row - 1] != str2[col - 1])
+          op_matrix[(row * (m + 1)) + col] |= SUBSTITUTE_OP;
+      }
+      d[row][col] = min;
+    }
+  }
+
+#if DEBUG
+  for (int col = 0; col < m + 1; ++col) {
+    for (int row = 0; row < n + 1; ++row) {
+      printf("%d ", d[row][col]);
+    }
+    printf("\n");
+  }
+#endif
+
+  print_matrix(op_matrix, m + 1, n, m);
   // backtrace(op_matrix.matrix, m + 1, str1, str2, n, m);
 }
 
 void print_matrix(int *op_matrix, int col_size, int n, int m) {
-  for (int row = m; row > 0; --row) {
-    for (int col = 0; col < n; ++col) {
-      printf("%4d", *(op_matrix + (row * col_size) + col));
+  for (int col = m; col > 0; --col) {
+    for (int row = 1; row <= n; ++row) {
+      int op = *(op_matrix + (row * (m + 1)) + col);
+      int count = 0;
+      if ((op & SUBSTITUTE_OP) != 0) {
+        printf("S");
+        count++;
+      }
+      if ((op & INSERT_OP) != 0) {
+        printf("I");
+        count++;
+      }
+      if ((op & DELETE_OP) != 0) {
+        printf("D");
+        count++;
+      }
+
+      if (op == 0) {
+        printf("M");
+        count++;
+      }
+
+      for (int cnt = count; cnt < 5; ++cnt) {
+        printf(" ");
+      }
     }
     printf("\n");
   }
