@@ -68,7 +68,7 @@ void backtrace(int *op_matrix, int col_size, char *str1, char *str2, int n,
                int m) {
   char align_str[n + m][8];  // n+m strings
 
-  // backtrace_main( op_matrix, col_size, str1, str2, n, m, 0, align_str);
+  backtrace_main(op_matrix, col_size, str1, str2, n, m, 0, align_str);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -167,7 +167,7 @@ int min_editdistance(char *str1, char *str2) {
 #endif
 
   print_matrix(op_matrix, m + 1, n, m);
-  // backtrace(op_matrix.matrix, m + 1, str1, str2, n, m);
+  backtrace(op_matrix, m + 1, str1, str2, n, m);
 }
 
 void print_matrix(int *op_matrix, int col_size, int n, int m) {
@@ -200,3 +200,6 @@ void print_matrix(int *op_matrix, int col_size, int n, int m) {
     printf("\n");
   }
 }
+
+static void backtrace_main(int *op_matrix, int col_size, char *str1, char *str2,
+                           int n, int m, int level, char align_str[][8]) {}
