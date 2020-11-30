@@ -173,7 +173,7 @@ int min_editdistance(char *str1, char *str2) {
 void print_matrix(int *op_matrix, int col_size, int n, int m) {
   for (int col = m; col > 0; --col) {
     for (int row = 1; row <= n; ++row) {
-      int op = *(op_matrix + (row * (m + 1)) + col);
+      int op = op_matrix[row * col_size + col];
       int count = 0;
       if ((op & SUBSTITUTE_OP) != 0) {
         printf("S");
@@ -202,4 +202,10 @@ void print_matrix(int *op_matrix, int col_size, int n, int m) {
 }
 
 static void backtrace_main(int *op_matrix, int col_size, char *str1, char *str2,
-                           int n, int m, int level, char align_str[][8]) {}
+                           int n, int m, int level, char align_str[][8]) {
+  for (int col = m; col > 0; --col) {
+    for (int row = n; row > 0; --row) {
+      int op = op_matrix[row * col_size + col];
+    }
+  }
+}
