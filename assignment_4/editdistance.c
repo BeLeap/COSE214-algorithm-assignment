@@ -10,8 +10,8 @@
 
 #define INSERT_COST 1
 #define DELETE_COST 1
-#define SUBSTITUTE_COST 2
-#define TRANSPOSE_COST 2
+#define SUBSTITUTE_COST 1
+#define TRANSPOSE_COST 1
 
 int count = 0;
 
@@ -106,6 +106,8 @@ typedef int BOOL;
 #define FALSE 0
 #define UNDEF -1
 
+#define INT_MAX 2147483646
+
 int min_editdistance(char *str1, char *str2) {
   int n = strlen(str1);
   int m = strlen(str2);
@@ -125,12 +127,12 @@ int min_editdistance(char *str1, char *str2) {
 
   // Initialize Matrix
   for (int col = 0; col < m + 1; ++col) {
-    d[0][col] = col;
+    d[0][col] = col * INSERT_COST;
     op_matrix[col] |= INSERT_OP;
   }
 
   for (int row = 0; row < n + 1; ++row) {
-    d[row][0] = row;
+    d[row][0] = row * DELETE_COST;
     op_matrix[(row * (m + 1))] |= DELETE_OP;
   }
   op_matrix[0] = 0;
@@ -142,8 +144,12 @@ int min_editdistance(char *str1, char *str2) {
       int del = d[row - 1][col] + DELETE_COST;
       int sub = d[row - 1][col - 1] +
                 (str1[row - 1] == str2[col - 1] ? 0 : SUBSTITUTE_COST);
+      int tra = (row > 1 && col > 1 && (str1[row - 1] == str2[col - 2]) &&
+                 (str1[row - 2] == str2[col - 1]))
+                    ? d[row - 2][col - 2] + TRANSPOSE_COST
+                    : INT_MAX;
 
-      int min = __GetMin3(ins, del, sub);
+      int min = __GetMin4(ins, del, sub, tra);
 
       if (ins == min) {
         op_matrix[(row * (m + 1)) + col] |= INSERT_OP;
@@ -156,6 +162,10 @@ int min_editdistance(char *str1, char *str2) {
       if (sub == min) {
         if (str1[row - 1] != str2[col - 1])
           op_matrix[(row * (m + 1)) + col] |= SUBSTITUTE_OP;
+      }
+
+      if (tra == min) {
+        op_matrix[(row * (m + 1)) + col] |= TRANSPOSE_OP;
       }
       d[row][col] = min;
     }
@@ -177,8 +187,8 @@ int min_editdistance(char *str1, char *str2) {
 }
 
 void print_matrix(int *op_matrix, int col_size, int n, int m) {
-  for (int col = m; col > 0; --col) {
-    for (int row = 1; row <= n; ++row) {
+  for (int row = n; row > 0; --row) {
+    for (int col = 1; col <= m; ++col) {
       int op = op_matrix[row * col_size + col];
       int count = 0;
       if ((op & SUBSTITUTE_OP) != 0) {
@@ -191,6 +201,10 @@ void print_matrix(int *op_matrix, int col_size, int n, int m) {
       }
       if ((op & DELETE_OP) != 0) {
         printf("D");
+        count++;
+      }
+      if ((op & TRANSPOSE_OP) != 0) {
+        printf("T");
         count++;
       }
 
@@ -210,8 +224,7 @@ void print_matrix(int *op_matrix, int col_size, int n, int m) {
 static void backtrace_main(int *op_matrix, int col_size, char *str1, char *str2,
                            int n, int m, int level, char align_str[][8]) {
   if (n <= 0 || m <= 0) {
-    fflush(stdout);
-    printf("\n[%d]===========================\n", ++count);
+    printf("\n[%d]===========================", ++count);
     print_alignment(align_str, level);
     return;
   }
@@ -263,6 +276,19 @@ static void backtrace_main(int *op_matrix, int col_size, char *str1, char *str2,
     printf("%d: %s\n", level, align_str[level]);
 #endif
     backtrace_main(op_matrix, col_size, str1, str2, n - 1, m, level + 1,
+                   align_str);
+  }
+
+  if ((op & TRANSPOSE_OP) != 0) {
+    align_str[level][0] = str1[n - 1];
+    align_str[level][1] = str1[n - 2];
+    align_str[level][2] = ' ';
+    align_str[level][3] = '-';
+    align_str[level][4] = ' ';
+    align_str[level][5] = str2[n - 1];
+    align_str[level][6] = str2[n - 2];
+    align_str[level][7] = '\0';
+    backtrace_main(op_matrix, col_size, str1, str2, n - 2, m - 2, level + 1,
                    align_str);
   }
 }
