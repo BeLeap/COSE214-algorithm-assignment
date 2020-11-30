@@ -13,6 +13,8 @@
 #define SUBSTITUTE_COST 2
 #define TRANSPOSE_COST 2
 
+int count = 0;
+
 // 재귀적으로 연산자 행렬을 순회하며, 두 문자열이 최소편집거리를 갖는 모든
 // 가능한 정렬(alignment) 결과를 출력한다. op_matrix : 이전 상태의 연산자 정보가
 // 저장된 행렬 (1차원 배열임에 주의!) col_size : op_matrix의 열의 크기 str1 :
@@ -68,6 +70,8 @@ void backtrace(int *op_matrix, int col_size, char *str1, char *str2, int n,
                int m) {
   char align_str[n + m][8];  // n+m strings
 
+  memset(align_str, 0, sizeof(align_str));
+  count = 0;
   backtrace_main(op_matrix, col_size, str1, str2, n, m, 0, align_str);
 }
 
@@ -90,7 +94,7 @@ int main() {
 
     distance = min_editdistance(str1, str2);
 
-    // printf( "\nMinEdit(%s, %s) = %d\n", str1, str2, distance);
+    printf("\nMinEdit(%s, %s) = %d\n", str1, str2, distance);
   }
   return 0;
 }
@@ -134,8 +138,8 @@ int min_editdistance(char *str1, char *str2) {
   // Build Distance Matrix
   for (int col = 1; col < m + 1; ++col) {
     for (int row = 1; row < n + 1; ++row) {
-      int ins = d[row - 1][col] + INSERT_COST;
-      int del = d[row][col - 1] + DELETE_COST;
+      int ins = d[row][col - 1] + INSERT_COST;
+      int del = d[row - 1][col] + DELETE_COST;
       int sub = d[row - 1][col - 1] +
                 (str1[row - 1] == str2[col - 1] ? 0 : SUBSTITUTE_COST);
 
@@ -168,6 +172,8 @@ int min_editdistance(char *str1, char *str2) {
 
   print_matrix(op_matrix, m + 1, n, m);
   backtrace(op_matrix, m + 1, str1, str2, n, m);
+
+  return d[m][n];
 }
 
 void print_matrix(int *op_matrix, int col_size, int n, int m) {
@@ -203,9 +209,60 @@ void print_matrix(int *op_matrix, int col_size, int n, int m) {
 
 static void backtrace_main(int *op_matrix, int col_size, char *str1, char *str2,
                            int n, int m, int level, char align_str[][8]) {
-  for (int col = m; col > 0; --col) {
-    for (int row = n; row > 0; --row) {
-      int op = op_matrix[row * col_size + col];
-    }
+  if (n <= 0 || m <= 0) {
+    fflush(stdout);
+    printf("\n[%d]===========================\n", ++count);
+    print_alignment(align_str, level);
+    return;
+  }
+
+  int op = op_matrix[n * col_size + m];
+
+  if ((op & SUBSTITUTE_OP) != 0 || op == 0) {
+    align_str[level][0] = str1[n - 1];
+    align_str[level][1] = ' ';
+    align_str[level][2] = '-';
+    align_str[level][3] = ' ';
+    align_str[level][4] = str2[m - 1];
+    align_str[level][5] = '\0';
+    align_str[level][6] = '\0';
+    align_str[level][7] = '\0';
+#if DEBUG
+    printf("%d: %s\n", level, align_str[level]);
+#endif
+    backtrace_main(op_matrix, col_size, str1, str2, n - 1, m - 1, level + 1,
+                   align_str);
+  }
+
+  if ((op & INSERT_OP) != 0) {
+    align_str[level][0] = '*';
+    align_str[level][1] = ' ';
+    align_str[level][2] = '-';
+    align_str[level][3] = ' ';
+    align_str[level][4] = str2[m - 1];
+    align_str[level][5] = '\0';
+    align_str[level][6] = '\0';
+    align_str[level][7] = '\0';
+#if DEBUG
+    printf("%d: %s\n", level, align_str[level]);
+#endif
+    backtrace_main(op_matrix, col_size, str1, str2, n, m - 1, level + 1,
+                   align_str);
+  }
+
+  if ((op & DELETE_OP) != 0) {
+    align_str[level][0] = str1[n - 1];
+    align_str[level][1] = ' ';
+    align_str[level][2] = '-';
+    align_str[level][3] = ' ';
+    align_str[level][4] = '*';
+    align_str[level][5] = '\0';
+    align_str[level][6] = '\0';
+    align_str[level][7] = '\0';
+#if DEBUG
+    printf("%d: %s\n", level, align_str[level]);
+#endif
+    backtrace_main(op_matrix, col_size, str1, str2, n - 1, m, level + 1,
+                   align_str);
   }
 }
