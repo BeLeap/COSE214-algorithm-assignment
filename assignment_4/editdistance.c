@@ -231,7 +231,23 @@ static void backtrace_main(int *op_matrix, int col_size, char *str1, char *str2,
 
   int op = op_matrix[n * col_size + m];
 
-  if ((op & SUBSTITUTE_OP) != 0 || op == 0) {
+  if ((op & SUBSTITUTE_OP) != 0) {
+    align_str[level][0] = str1[n - 1];
+    align_str[level][1] = ' ';
+    align_str[level][2] = '-';
+    align_str[level][3] = ' ';
+    align_str[level][4] = str2[m - 1];
+    align_str[level][5] = '\0';
+    align_str[level][6] = '\0';
+    align_str[level][7] = '\0';
+#if DEBUG
+    printf("%d: %s\n", level, align_str[level]);
+#endif
+    backtrace_main(op_matrix, col_size, str1, str2, n - 1, m - 1, level + 1,
+                   align_str);
+  }
+
+  if (op == 0) {
     align_str[level][0] = str1[n - 1];
     align_str[level][1] = ' ';
     align_str[level][2] = '-';
