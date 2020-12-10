@@ -1,4 +1,5 @@
-//#define BINARY_MODE
+#define BINARY_MODE
+#define DEBUG
 
 #include <assert.h>
 #include <stdio.h>
@@ -145,12 +146,14 @@ int main(int argc, char **argv) {
   }
 
   // 텍스트 파일로부터 문자별 빈도 저장
-  // int num_bytes = read_chars( fp, ch_freq);
+  int num_bytes = read_chars(fp, ch_freq);
 
   fclose(fp);
 
+#ifdef DEBUG
   // 문자별 빈도 출력 (for debugging)
-  // print_char_freq( ch_freq);
+  print_char_freq(ch_freq);
+#endif
 
   // 허프만 코드/트리 생성
   // huffman_tree = run_huffman( ch_freq, codes);
@@ -346,4 +349,19 @@ tNode *heapDelete(HEAP *heap) {
 void heapDestroy(HEAP *heap) {
   free(heap->heapArr);
   free(heap);
+}
+
+void process_frequency(char content, int *ch_freq) { ch_freq[(int)content]++; }
+
+int read_chars(FILE *fp, int *ch_freq) {
+  char content = ' ';
+  int count = 0;
+
+  while (!feof(fp)) {
+    fscanf(fp, "%c", &content);
+    process_frequency(content, ch_freq);
+    count++;
+  }
+
+  return count;
 }
