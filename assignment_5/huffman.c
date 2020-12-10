@@ -102,7 +102,7 @@ void print_char_freq(int *ch_freq) {
 // return value : 허프만 트리의 root node
 tNode *run_huffman(int *ch_freq, char *codes[]) {
   tNode *root;
-  // root = make_huffman_tree( ch_freq);
+  root = make_huffman_tree(ch_freq);
 
   // make_huffman_code( root, codes);
 
@@ -156,7 +156,7 @@ int main(int argc, char **argv) {
 #endif
 
   // 허프만 코드/트리 생성
-  // huffman_tree = run_huffman( ch_freq, codes);
+  huffman_tree = run_huffman(ch_freq, codes);
 
   // 허프만 코드 출력 (stdout)
   // print_huffman_code( codes);
@@ -364,4 +364,29 @@ int read_chars(FILE *fp, int *ch_freq) {
   }
 
   return count;
+}
+
+tNode *make_huffman_tree(int *ch_freq) {
+  HEAP *frequencyHeap;
+  frequencyHeap = heapCreate(256);
+
+  for (int index = 0; index < 256; ++index) {
+    tNode *characterNode;
+    characterNode = newNode(index, ch_freq[index]);
+    heapInsert(frequencyHeap, characterNode);
+  }
+
+  tNode *characterNode;
+  while ((characterNode = heapDelete(frequencyHeap)) != NULL) {
+    printf("%d\n", characterNode->freq);
+  }
+}
+
+tNode *newNode(char data, int freq) {
+  tNode *newNode = (tNode *)malloc(sizeof(tNode));
+  newNode->data = data;
+  newNode->freq = freq;
+  newNode->left = NULL;
+  newNode->right = NULL;
+  return newNode;
 }
