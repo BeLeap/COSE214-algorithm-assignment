@@ -1,5 +1,5 @@
 huffman: huffman.c
-	gcc -o huffman huffman.c
+	gcc -o huffman huffman.c -g
 
 run: huffman
 	./huffman test.txt enc.txt dec.txt

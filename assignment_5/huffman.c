@@ -152,7 +152,7 @@ int main(int argc, char **argv) {
 
 #ifdef DEBUG
   // 문자별 빈도 출력 (for debugging)
-  print_char_freq(ch_freq);
+  // print_char_freq(ch_freq);
 #endif
 
   // 허프만 코드/트리 생성
@@ -372,14 +372,22 @@ tNode *make_huffman_tree(int *ch_freq) {
 
   for (int index = 0; index < 256; ++index) {
     tNode *characterNode;
-    characterNode = newNode(index, ch_freq[index]);
+    characterNode = newNode((char)index, ch_freq[index]);
     heapInsert(frequencyHeap, characterNode);
   }
 
-  tNode *characterNode;
-  while ((characterNode = heapDelete(frequencyHeap)) != NULL) {
-    printf("%d\n", characterNode->freq);
+  tNode *characterNode1;
+  tNode *characterNode2;
+  tNode *sumNode;
+  while ((characterNode1 = heapDelete(frequencyHeap)) != NULL &&
+         (characterNode2 = heapDelete(frequencyHeap)) != NULL) {
+    sumNode = newNode((char)0, characterNode1->freq + characterNode2->freq);
+    sumNode->left = characterNode1;
+    sumNode->right = characterNode2;
+    heapInsert(frequencyHeap, sumNode);
   }
+
+  return sumNode;
 }
 
 tNode *newNode(char data, int freq) {
