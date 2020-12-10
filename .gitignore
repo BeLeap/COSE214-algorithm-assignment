@@ -174,3 +174,5 @@ vignettes/*.pdf
 # End of https://www.toptal.com/developers/gitignore/api/vscode,c++,r,images,cmake
 
 build/
+assignment_5/sample.txt
+assignment_5/text.txt
