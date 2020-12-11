@@ -1,5 +1,4 @@
 #define BINARY_MODE
-#define DEBUG
 
 #include <assert.h>
 #include <stdio.h>
@@ -159,7 +158,7 @@ int main(int argc, char **argv) {
   huffman_tree = run_huffman(ch_freq, codes);
 
   // 허프만 코드 출력 (stdout)
-  print_huffman_code(codes);
+  // print_huffman_code(codes);
 
   ////////////////////////////////////////
   // 입력: 텍스트 파일
@@ -205,7 +204,7 @@ int main(int argc, char **argv) {
 #endif
 
   // 허프만 트리 메모리 해제
-  // destroyTree( huffman_tree);
+  destroyTree(huffman_tree);
 
   fclose(infp);
   fclose(outfp);
@@ -351,15 +350,12 @@ void heapDestroy(HEAP *heap) {
   free(heap);
 }
 
-void process_frequency(char content, int *ch_freq) { ch_freq[(int)content]++; }
-
 int read_chars(FILE *fp, int *ch_freq) {
-  char content = ' ';
+  int content = ' ';
   int count = 0;
 
-  while (!feof(fp)) {
-    fscanf(fp, "%c", &content);
-    process_frequency(content, ch_freq);
+  while ((content = fgetc(fp)) != EOF) {
+    ch_freq[content]++;
     count++;
   }
 
@@ -386,6 +382,7 @@ tNode *make_huffman_tree(int *ch_freq) {
     sumNode->right = characterNode2;
     heapInsert(frequencyHeap, sumNode);
   }
+  heapDestroy(frequencyHeap);
 
   return sumNode;
 }
@@ -402,9 +399,7 @@ tNode *newNode(char data, int freq) {
 void traverse_tree(tNode *root, char *code, int depth, char *codes[]) {
   if (root->left == NULL && root->right == NULL) {
     code[depth] = '\0';
-    char *encoded = (char *)malloc(sizeof(char) * (depth) + 1);
-    encoded = strdup(code);
-    codes[(root->data)] = encoded;
+    codes[(root->data)] = strdup(code);
     return;
   }
 
@@ -426,14 +421,13 @@ void make_huffman_code(tNode *root, char *codes[]) {
 }
 
 int encoding_binary(char *codes[], FILE *infp, FILE *outfp) {
-  char content;
+  int content;
   int bytes = 0;
   int zero = 0;
   int one = 1;
 
-  while (!feof(infp)) {
-    fscanf(infp, "%c", &content);
-    char *code = codes[(int)content];
+  while ((content = fgetc(infp)) != EOF) {
+    char *code = codes[content];
     for (int index = 0; index < strlen(code); ++index) {
       if (code[index] == '0') {
         fwrite(&zero, 1, 1, outfp);
@@ -451,7 +445,7 @@ int encoding_binary(char *codes[], FILE *infp, FILE *outfp) {
 }
 
 void free_huffman_code(char *codes[]) {
-  for (int i = 0; i < sizeof(codes); ++i) {
+  for (int i = 0; i < 256; ++i) {
     free(codes[i]);
   }
 }
@@ -474,4 +468,10 @@ void decoding_binary(tNode *root, FILE *infp, FILE *outfp) {
       currNode = currNode->right;
     }
   }
+}
+
+void destroyTree(tNode *root) {
+  if (root->left != NULL) destroyTree(root->left);
+  if (root->right != NULL) destroyTree(root->right);
+  free(root);
 }
