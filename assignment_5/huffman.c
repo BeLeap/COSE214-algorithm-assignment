@@ -1,4 +1,4 @@
-#define BINARY_MODE
+// #define BINARY_MODE
 
 #include <assert.h>
 #include <stdio.h>
@@ -429,9 +429,10 @@ int encoding(char *codes[], FILE *infp, FILE *outfp) {
   while ((content = fgetc(infp)) != EOF) {
     char *code = codes[content];
     fprintf(outfp, "%s", code);
+    bytes += strlen(code);
   }
 
-  fprintf(stderr, "written bytes: %d\n", bytes / 8);
+  fprintf(stderr, "written bytes: %d\n", bytes);
 
   return bytes;
 }
@@ -480,18 +481,16 @@ void decoding(tNode *root, FILE *infp, FILE *outfp) {
   char content;
   tNode *currNode = root;
 
-  while (!feof(infp)) {
-    if (currNode->left == NULL && currNode->right == NULL) {
-      fprintf(outfp, "%c", currNode->data);
-      currNode = root;
-    }
-
-    fread(&content, 1, 1, infp);
-
-    if (content == 0) {
+  while ((content = fgetc(infp)) != EOF) {
+    if (content == '0') {
       currNode = currNode->left;
     } else {
       currNode = currNode->right;
+    }
+
+    if (currNode->left == NULL && currNode->right == NULL) {
+      fprintf(outfp, "%c", currNode->data);
+      currNode = root;
     }
   }
 }
