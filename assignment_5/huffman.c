@@ -408,7 +408,6 @@ void traverse_tree(tNode *root, char *code, int depth, char *codes[]) {
     return;
   }
 
-  fprintf(stderr, "depth: %d\n", depth);
   if (root->left != NULL) {
     code[depth] = '0';
     traverse_tree(root->left, code, depth + 1, codes);
@@ -435,7 +434,7 @@ int encoding_binary(char *codes[], FILE *infp, FILE *outfp) {
   while (!feof(infp)) {
     fscanf(infp, "%c", &content);
     char *code = codes[(int)content];
-    for (int index = strlen(code) - 1; index >= 0; --index) {
+    for (int index = 0; index < strlen(code); ++index) {
       if (code[index] == '0') {
         fwrite(&zero, 1, 1, outfp);
         bytes++;
