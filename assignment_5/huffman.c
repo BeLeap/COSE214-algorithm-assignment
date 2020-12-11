@@ -199,7 +199,7 @@ int main(int argc, char **argv) {
 
   // 허프만 트리를 이용하여 디코딩
 #ifdef BINARY_MODE
-  // decoding_binary(huffman_tree, infp, outfp);
+  decoding_binary(huffman_tree, infp, outfp);
 #else
   // decoding( huffman_tree, infp, outfp);
 #endif
@@ -431,7 +431,8 @@ int encoding_binary(char *codes[], FILE *infp, FILE *outfp) {
   int bytes = 0;
   int zero = 0;
   int one = 1;
-  do {
+
+  while (!feof(infp)) {
     fscanf(infp, "%c", &content);
     char *code = codes[(int)content];
     for (int index = strlen(code) - 1; index >= 0; --index) {
@@ -443,7 +444,7 @@ int encoding_binary(char *codes[], FILE *infp, FILE *outfp) {
         bytes++;
       }
     }
-  } while (!feof(infp));
+  }
 
   fprintf(stderr, "written bytes: %d\n", bytes / 8);
 
@@ -453,5 +454,25 @@ int encoding_binary(char *codes[], FILE *infp, FILE *outfp) {
 void free_huffman_code(char *codes[]) {
   for (int i = 0; i < sizeof(codes); ++i) {
     free(codes[i]);
+  }
+}
+
+void decoding_binary(tNode *root, FILE *infp, FILE *outfp) {
+  char content;
+  tNode *currNode = root;
+
+  while (!feof(infp)) {
+    if (currNode->left == NULL && currNode->right == NULL) {
+      fprintf(outfp, "%c", currNode->data);
+      currNode = root;
+    }
+
+    fread(&content, 1, 1, infp);
+
+    if (content == 0) {
+      currNode = currNode->left;
+    } else {
+      currNode = currNode->right;
+    }
   }
 }
