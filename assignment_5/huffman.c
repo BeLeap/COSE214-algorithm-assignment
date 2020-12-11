@@ -175,7 +175,7 @@ int main(int argc, char **argv) {
 
   // 허프만코드를 이용하여 인코딩(압축)
 #ifdef BINARY_MODE
-  // int encoded_bytes = encoding_binary( codes, infp, outfp);
+  int encoded_bytes = encoding_binary(codes, infp, outfp);
 #else
   // int encoded_bytes = encoding( codes, infp, outfp);
 #endif
@@ -421,4 +421,28 @@ void make_huffman_code(tNode *root, char *codes[]) {
       0,
   };
   traverse_tree(root, code, 0, codes);
+}
+
+int encoding_binary(char *codes[], FILE *infp, FILE *outfp) {
+  char content;
+  int bytes = 0;
+  int zero = 0;
+  int one = 1;
+  do {
+    fscanf(infp, "%c", &content);
+    char *code = codes[(int)content];
+    for (int index = strlen(code) - 1; index >= 0; --index) {
+      if (code[index] == '0') {
+        fwrite(&zero, 1, 1, outfp);
+        bytes++;
+      } else if (code[index] == '1') {
+        fwrite(&one, 1, 1, outfp);
+        bytes++;
+      }
+    }
+  } while (!feof(infp));
+
+  fprintf(stderr, "written bytes: %d\n", bytes / 8);
+
+  return bytes;
 }
