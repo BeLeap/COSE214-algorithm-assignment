@@ -104,7 +104,7 @@ tNode *run_huffman(int *ch_freq, char *codes[]) {
   tNode *root;
   root = make_huffman_tree(ch_freq);
 
-  // make_huffman_code( root, codes);
+  make_huffman_code(root, codes);
 
   return root;
 }
@@ -397,4 +397,25 @@ tNode *newNode(char data, int freq) {
   newNode->left = NULL;
   newNode->right = NULL;
   return newNode;
+}
+
+void traverse_tree(tNode *root, char *code, int depth, char *codes[]) {
+  if (root->left == NULL && root->right == NULL) {
+    code[depth] = '\0';
+    strdup(codes[(int)(root->data)], code);
+  }
+
+  if (root->left != NULL) {
+    code[depth] = '0';
+    traverse_tree(root->left, code, depth + 1, codes);
+  }
+  if (root->right != NULL) {
+    code[depth] = '1';
+    traverse_tree(root->right, code, depth, codes);
+  }
+}
+
+void make_huffman_code(tNode *root, char *codes[]) {
+  char code;
+  traverse_tree(root, code, 0, codes);
 }
