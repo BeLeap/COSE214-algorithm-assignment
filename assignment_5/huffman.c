@@ -181,7 +181,7 @@ int main(int argc, char **argv) {
 #endif
 
   // 허프만 코드 메모리 해제
-  // free_huffman_code( codes);
+  free_huffman_code(codes);
 
   fclose(infp);
   fclose(outfp);
@@ -199,7 +199,7 @@ int main(int argc, char **argv) {
 
   // 허프만 트리를 이용하여 디코딩
 #ifdef BINARY_MODE
-  // decoding_binary( huffman_tree, infp, outfp);
+  // decoding_binary(huffman_tree, infp, outfp);
 #else
   // decoding( huffman_tree, infp, outfp);
 #endif
@@ -402,10 +402,13 @@ tNode *newNode(char data, int freq) {
 void traverse_tree(tNode *root, char *code, int depth, char *codes[]) {
   if (root->left == NULL && root->right == NULL) {
     code[depth] = '\0';
-    codes[(int)(root->data)] = strdup(code);
+    char *encoded = (char *)malloc(sizeof(char) * (depth) + 1);
+    encoded = strdup(code);
+    codes[(root->data)] = encoded;
     return;
   }
 
+  fprintf(stderr, "depth: %d\n", depth);
   if (root->left != NULL) {
     code[depth] = '0';
     traverse_tree(root->left, code, depth + 1, codes);
@@ -445,4 +448,10 @@ int encoding_binary(char *codes[], FILE *infp, FILE *outfp) {
   fprintf(stderr, "written bytes: %d\n", bytes / 8);
 
   return bytes;
+}
+
+void free_huffman_code(char *codes[]) {
+  for (int i = 0; i < sizeof(codes); ++i) {
+    free(codes[i]);
+  }
 }
