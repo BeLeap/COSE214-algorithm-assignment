@@ -159,7 +159,7 @@ int main(int argc, char **argv) {
   huffman_tree = run_huffman(ch_freq, codes);
 
   // 허프만 코드 출력 (stdout)
-  // print_huffman_code( codes);
+  print_huffman_code(codes);
 
   ////////////////////////////////////////
   // 입력: 텍스트 파일
@@ -402,7 +402,8 @@ tNode *newNode(char data, int freq) {
 void traverse_tree(tNode *root, char *code, int depth, char *codes[]) {
   if (root->left == NULL && root->right == NULL) {
     code[depth] = '\0';
-    strdup(codes[(int)(root->data)], code);
+    codes[(int)(root->data)] = strdup(code);
+    return;
   }
 
   if (root->left != NULL) {
@@ -411,11 +412,13 @@ void traverse_tree(tNode *root, char *code, int depth, char *codes[]) {
   }
   if (root->right != NULL) {
     code[depth] = '1';
-    traverse_tree(root->right, code, depth, codes);
+    traverse_tree(root->right, code, depth + 1, codes);
   }
 }
 
 void make_huffman_code(tNode *root, char *codes[]) {
-  char code;
+  char code[256] = {
+      0,
+  };
   traverse_tree(root, code, 0, codes);
 }
