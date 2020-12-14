@@ -432,8 +432,6 @@ int encoding(char *codes[], FILE *infp, FILE *outfp) {
     bytes += strlen(code);
   }
 
-  fprintf(stderr, "written bytes: %d\n", bytes);
-
   return bytes;
 }
 
@@ -465,8 +463,6 @@ int encoding_binary(char *codes[], FILE *infp, FILE *outfp) {
       }
     }
   }
-
-  fprintf(stderr, "written bytes: %d\n", bytes);
 
   return bytes;
 }
