@@ -15,5 +15,9 @@ index-debug:
 search-debug:
 	gcc search.c -o search -g
 
+run:
+	./index words.txt
+	./search index.txt
+
 clean:
 	rm index search
