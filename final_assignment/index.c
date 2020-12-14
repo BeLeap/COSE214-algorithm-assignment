@@ -12,9 +12,14 @@ void PrintError(char err[]) {
   // clang-format on
 }
 
+void Println(char content[]) { printf("%s\n", content); }
+
 int main(int argc, char* argv[]) {
   if (argc != 2) {
     PrintError("Not enough arguments");
     return 1;
   }
+
+  char* filename = argv[1];
+  Println(filename);
 }
