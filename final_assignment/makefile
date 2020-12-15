@@ -1,23 +1,11 @@
-all: index search
+CC=gcc
+CFLAGS=-g -Wall
+OBJS=index.o lib/general/general.o lib/redblacktree/redblacktree.o
+TARGET=index
 
-index:
-	gcc index.c -o index
+$(TARGET): $(OBJS)
+	$(CC) -o $@ $(OBJS)
 
-search:
-	gcc search.c -o search
-
-
-debug: index-debug search-debug
-
-index-debug:
-	gcc index.c -o index -g
-
-search-debug:
-	gcc search.c -o search -g
-
-run:
-	./index words.txt
-	./search index.txt
-
-clean:
-	rm index search
+index.o: index.c lib/general/general.o lib/redblacktree/redblacktree.o
+general.o: lib/general/general.h lib/general/general.c
+redblacktree.o: lib/redblacktree/redblacktree.h lib/redblacktree/redblacktree.c
