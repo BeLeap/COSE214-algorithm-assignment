@@ -9,3 +9,6 @@ $(TARGET): $(OBJS)
 index.o: index.c lib/general/general.o lib/redblacktree/redblacktree.o
 general.o: lib/general/general.h lib/general/general.c
 redblacktree.o: lib/redblacktree/redblacktree.h lib/redblacktree/redblacktree.c
+
+clear:
+	find . -type f -name '*.o' -delete
