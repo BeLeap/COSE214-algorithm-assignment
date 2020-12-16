@@ -3,23 +3,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-LinkedList NewLinkedList() {
-  LinkedList newLinkedList;
-  newLinkedList.head = NULL;
-  newLinkedList.tail = NULL;
+LinkedList* NewLinkedList(void* Compare) {
+  LinkedList* newLinkedList = (LinkedList*)malloc(sizeof(LinkedList));
+  newLinkedList->head = NULL;
+  newLinkedList->tail = NULL;
 
-  newLinkedList.Insert = LinkedListInsert;
-  newLinkedList.Delete = LinkedListDelete;
+  newLinkedList->Compoare = Compare;
+
+  newLinkedList->Insert = LinkedListInsert;
+  newLinkedList->Delete = LinkedListDelete;
+  newLinkedList->Append = LinkedListAppend;
 
   return newLinkedList;
 }
 
-BOOL LinkedListInsert(LinkedList* self, int data) {
+BOOL LinkedListInsert(LinkedList* self, int key, void* data) {
   Node* newNode = (Node*)malloc(sizeof(Node));
   if (newNode == NULL) {
     PrintError("Failed to allocate memory");
     return FALSE;
   }
+  newNode->key = key;
   newNode->data = data;
 
   if (self->head == NULL) {
@@ -30,7 +34,7 @@ BOOL LinkedListInsert(LinkedList* self, int data) {
 
   Node* prev = NULL;
   Node* curr = self->head;
-  while (curr->data < data) {
+  while (key > curr->key) {
     prev = curr;
     curr = curr->next;
     if (curr == NULL) {
@@ -49,17 +53,17 @@ BOOL LinkedListInsert(LinkedList* self, int data) {
   return TRUE;
 }
 
-BOOL LinkedListDelete(LinkedList* self, int data) {
+BOOL LinkedListDelete(LinkedList* self, int key) {
   Node* prev = NULL;
   Node* curr = self->head;
 
-  while (curr->data < data) {
+  while (key > curr->key) {
     prev = curr;
     curr = curr->next;
     if (curr == NULL) {
       return FALSE;
     }
-    if (curr->data == data) {
+    if (key == curr->key) {
       prev->next = curr->next;
       free(curr);
       return TRUE;
@@ -67,4 +71,23 @@ BOOL LinkedListDelete(LinkedList* self, int data) {
   }
 
   return UNKNOWN;
+}
+
+BOOL LinkedListAppend(LinkedList* self, int key, void* data) {
+  Node* newNode = (Node*)malloc(sizeof(Node));
+  if (newNode == NULL) {
+    PrintError("Failed to allocate memory");
+    return FALSE;
+  }
+  newNode->key = key;
+  newNode->data = data;
+
+  if (self->head == NULL) {
+    self->head = newNode;
+    self->tail = newNode;
+    return TRUE;
+  }
+  self->tail->next = newNode;
+  self->tail = newNode;
+  return TRUE;
 }
