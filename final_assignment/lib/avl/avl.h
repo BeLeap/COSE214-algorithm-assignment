@@ -8,17 +8,17 @@ typedef struct __Node {
   void *wordList;
   struct __Node *left, *right;
   int height;
-} Node;
+} AvlNode;
 
-Node *Insert(Node *, int, void *);
-Node *Delete(Node *, int);
-int GetHeight(Node *);
-Node *RotateRight(Node *);
-Node *RotateLeft(Node *);
-Node *RR(Node *);
-Node *LL(Node *);
-Node *LR(Node *);
-Node *RL(Node *);
-int GetBalanceFactor(Node *);
+AvlNode *Insert(AvlNode *, int, void *);
+AvlNode *Delete(AvlNode *, int);
+int GetHeight(AvlNode *);
+AvlNode *RotateRight(AvlNode *);
+AvlNode *RotateLeft(AvlNode *);
+AvlNode *RR(AvlNode *);
+AvlNode *LL(AvlNode *);
+AvlNode *LR(AvlNode *);
+AvlNode *RL(AvlNode *);
+int GetBalanceFactor(AvlNode *);
 
 #endif

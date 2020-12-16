@@ -3,9 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-Node* Insert(Node* root, int key, void* wordList) {
+AvlNode* Insert(AvlNode* root, int key, void* wordList) {
   if (root == NULL) {
-    root = (Node*)malloc(sizeof(Node));
+    root = (AvlNode*)malloc(sizeof(AvlNode));
     root->key = key;
     root->left = NULL;
     root->right = NULL;
@@ -33,8 +33,8 @@ Node* Insert(Node* root, int key, void* wordList) {
   return root;
 }
 
-Node* Delete(Node* root, int key) {
-  Node* cursor;
+AvlNode* Delete(AvlNode* root, int key) {
+  AvlNode* cursor;
   if (root == NULL) {
     return NULL;
   }
@@ -82,7 +82,7 @@ Node* Delete(Node* root, int key) {
   return root;
 }
 
-int GetHeight(Node* root) {
+int GetHeight(AvlNode* root) {
   int leftHeight, rightHeight;
   if (root == NULL) {
     return 0;
@@ -103,8 +103,8 @@ int GetHeight(Node* root) {
   return leftHeight > rightHeight ? leftHeight : rightHeight;
 }
 
-Node* RotateRight(Node* node) {
-  Node* newNode;
+AvlNode* RotateRight(AvlNode* node) {
+  AvlNode* newNode;
   newNode = node->left;
   node->left = newNode->right;
   newNode->right = node;
@@ -114,8 +114,8 @@ Node* RotateRight(Node* node) {
   return newNode;
 }
 
-Node* RotateLeft(Node* node) {
-  Node* newNode;
+AvlNode* RotateLeft(AvlNode* node) {
+  AvlNode* newNode;
   newNode = node->right;
   node->right = newNode->left;
   newNode->left = node;
@@ -125,29 +125,29 @@ Node* RotateLeft(Node* node) {
   return newNode;
 }
 
-Node* RR(Node* node) {
+AvlNode* RR(AvlNode* node) {
   node = RotateLeft(node);
   return node;
 }
 
-Node* LL(Node* node) {
+AvlNode* LL(AvlNode* node) {
   node = RotateRight(node);
   return node;
 }
 
-Node* LR(Node* node) {
+AvlNode* LR(AvlNode* node) {
   node->left = RotateLeft(node->left);
   node = RotateRight(node);
   return node;
 }
 
-Node* RL(Node* node) {
+AvlNode* RL(AvlNode* node) {
   node->right = RotateRight(node->right);
   node = RotateLeft(node);
   return node;
 }
 
-int GetBalanceFactor(Node* node) {
+int GetBalanceFactor(AvlNode* node) {
   int leftHeight, rightHeight;
   if (node == NULL) {
     return 0;
