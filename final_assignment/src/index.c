@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "../lib/print/print.h"
+#include "../lib/general/general.h"
 
 int main(int argc, char* argv[]) {
   if (argc != 2) {

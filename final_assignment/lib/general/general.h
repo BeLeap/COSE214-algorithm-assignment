@@ -6,3 +6,9 @@
 
 void PrintError(char err[]);
 void Println(char content[]);
+
+typedef enum __BOOL{
+    TRUE = 1,
+    FALSE = 0,
+    UNKNOWN = -1,
+} BOOL;
