@@ -1,3 +1,6 @@
+#ifndef _AVLH_
+#define _AVLH_
+
 #include "../general/general.h"
 
 typedef struct __Node {
@@ -17,3 +20,5 @@ Node *LL(Node *);
 Node *LR(Node *);
 Node *RL(Node *);
 int GetBalanceFactor(Node *);
+
+#endif

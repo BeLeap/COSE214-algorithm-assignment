@@ -1,12 +1,17 @@
 #include "vector.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 Vector NewVector() {
   Vector newVector;
   newVector.length = 0;
   newVector.capacity = 1;
   newVector.data = (void**)malloc(sizeof(void*) * 1);
+  if (newVector.data == NULL) {
+    PrintError("[0] Failed to allocated memory");
+    return newVector;
+  }
 
   newVector.Push = Push;
   newVector.Pop = Pop;
@@ -21,11 +26,19 @@ BOOL Push(void* data, Vector* self) {
   return PutDataByIndex(self->length, data, self);
 }
 
-void* Pop(Vector* self) { return PopDataByIndex(self->length, self); }
+void* Pop(Vector* self) { return PopDataByIndex(self->length - 1, self); }
 
-void* GetDataByIndex(int index, Vector* self) { return self->data[index]; }
+void* GetDataByIndex(int index, Vector* self) {
+  if (index >= self->length) {
+    return NULL;
+  }
+  return self->data[index];
+}
 
 void* PopDataByIndex(int index, Vector* self) {
+  if (index >= self->length || index < 0) {
+    return NULL;
+  }
   void* data = self->data[index];
   __DeleteDataByIndex(index, self);
   return data;
@@ -33,6 +46,10 @@ void* PopDataByIndex(int index, Vector* self) {
 
 BOOL PutDataByIndex(int index, void* data, Vector* self) {
   self->length++;
+  if (index > self->length || index < 0) {
+    return FALSE;
+  }
+
   if (!__AdjustCapacity(INCREASING, self)) {
     return FALSE;
   }
@@ -50,6 +67,7 @@ BOOL __AdjustCapacity(FUNCTION func, Vector* self) {
   } else if (func == DECREASING) {
     return __DecreaseCapacity(self);
   }
+  return TRUE;
 }
 
 BOOL __EncreaseCapacity(Vector* self) {
@@ -63,7 +81,10 @@ BOOL __EncreaseCapacity(Vector* self) {
     }
 
     self->data = (void**)realloc(self->data, sizeof(void*) * capacity);
-    if (self->data == NULL) return FALSE;
+    if (self->data == NULL) {
+      PrintError("[1] Faield to allocate memory");
+      return FALSE;
+    }
     self->capacity = capacity;
   }
 
@@ -77,11 +98,17 @@ BOOL __DecreaseCapacity(Vector* self) {
   } else {
     capacity /= 2;
   }
-  capacity < self->length ? self->capacity : capacity;
+  capacity = capacity < self->length ? self->capacity : capacity;
 
   if (capacity != self->capacity) {
-    self->data = (void**)realloc(self->data, sizeof(void*) * capacity);
-    if (self->data == NULL) return FALSE;
+    void** temp = (void**)malloc(sizeof(void*) * capacity);
+    if (temp == NULL) {
+      PrintError("[2] Failed to allocate memory");
+      return FALSE;
+    }
+    memcpy(temp, self->data, sizeof(void*) * self->length);
+    free(self->data);
+    self->data = temp;
     self->capacity = capacity;
   }
 
@@ -90,7 +117,7 @@ BOOL __DecreaseCapacity(Vector* self) {
 
 BOOL __DeleteDataByIndex(int index, Vector* self) {
   for (int i = index; i < self->length - 1; ++i) {
-    self->data[i] = self->data[i + 1];
+    self->data[i - 1] = self->data[i];
   }
   self->length--;
   return !__AdjustCapacity(DECREASING, self);

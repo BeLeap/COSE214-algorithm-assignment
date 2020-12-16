@@ -1,3 +1,5 @@
+#ifndef _VECTORH_
+#define _VECTORH_
 #include "../general/general.h"
 
 typedef struct __Vector {
@@ -30,3 +32,4 @@ BOOL __EncreaseCapacity(Vector*);
 BOOL __DecreaseCapacity(Vector*);
 
 BOOL __DeleteDataByIndex(int, Vector*);
+#endif
