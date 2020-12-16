@@ -9,7 +9,7 @@ Vector NewVector() {
   newVector.capacity = 1;
   newVector.data = (void**)malloc(sizeof(void*) * 1);
   if (newVector.data == NULL) {
-    PrintError("[0] Failed to allocated memory");
+    PrintError("Failed to allocated memory");
     return newVector;
   }
 
@@ -82,7 +82,7 @@ BOOL __EncreaseCapacity(Vector* self) {
 
     self->data = (void**)realloc(self->data, sizeof(void*) * capacity);
     if (self->data == NULL) {
-      PrintError("[1] Faield to allocate memory");
+      PrintError("Failed to allocate memory");
       return FALSE;
     }
     self->capacity = capacity;
@@ -103,7 +103,7 @@ BOOL __DecreaseCapacity(Vector* self) {
   if (capacity != self->capacity) {
     void** temp = (void**)malloc(sizeof(void*) * capacity);
     if (temp == NULL) {
-      PrintError("[2] Failed to allocate memory");
+      PrintError("Failed to allocate memory");
       return FALSE;
     }
     memcpy(temp, self->data, sizeof(void*) * self->length);
