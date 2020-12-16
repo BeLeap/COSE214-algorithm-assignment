@@ -146,3 +146,24 @@ Node* RL(Node* node) {
   node = RotateLeft(node);
   return node;
 }
+
+int GetBalanceFactor(Node* node) {
+  int leftHeight, rightHeight;
+  if (node == NULL) {
+    return 0;
+  }
+
+  if (node->left == NULL) {
+    leftHeight = 0;
+  } else {
+    leftHeight = 1 + node->left->height;
+  }
+
+  if (node->right == NULL) {
+    rightHeight = 0;
+  } else {
+    rightHeight = 1 + node->right->height;
+  }
+
+  return leftHeight - rightHeight;
+}
