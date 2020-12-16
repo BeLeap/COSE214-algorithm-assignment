@@ -1,17 +1,20 @@
 #include "linkedlist.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+
 LinkedList NewLinkedList() {
   LinkedList newLinkedList;
   newLinkedList.head = NULL;
   newLinkedList.tail = NULL;
 
-  newLinkedList.Insert = Insert;
-  newLinkedList.Delete = Delete;
+  newLinkedList.Insert = LinkedListInsert;
+  newLinkedList.Delete = LinkedListDelete;
 
   return newLinkedList;
 }
 
-BOOL Insert(LinkedList* self, int data) {
+BOOL LinkedListInsert(LinkedList* self, int data) {
   Node* newNode = (Node*)malloc(sizeof(Node));
   if (newNode == NULL) {
     PrintError("Failed to allocate memory");
@@ -46,7 +49,7 @@ BOOL Insert(LinkedList* self, int data) {
   return TRUE;
 }
 
-BOOL Delete(LinkedList* self, int data) {
+BOOL LinkedListDelete(LinkedList* self, int data) {
   Node* prev = NULL;
   Node* curr = self->head;
 
@@ -62,4 +65,6 @@ BOOL Delete(LinkedList* self, int data) {
       return TRUE;
     }
   }
+
+  return UNKNOWN;
 }

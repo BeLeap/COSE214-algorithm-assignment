@@ -1,6 +1,5 @@
-#ifndef _LINKEDLISTH_
-#define _LINKEDLISTH_
-
+#ifndef LINKEDLIST_H
+#define LINKEDLIST_h
 #include "../general/general.h"
 
 typedef struct __Node {
@@ -18,7 +17,6 @@ typedef struct __LinkedList {
 
 LinkedList NewLinkedList();
 
-BOOL Insert(LinkedList*, int);
-BOOL Delete(LinkedList*, int);
-
+BOOL LinkedListInsert(LinkedList*, int);
+BOOL LinkedListDelete(LinkedList*, int);
 #endif

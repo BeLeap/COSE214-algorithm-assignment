@@ -1,6 +1,5 @@
-#ifndef _AVLH_
-#define _AVLH_
-
+#ifndef AVL_H
+#define AVL_H
 #include "../general/general.h"
 
 typedef struct __Node {
@@ -20,5 +19,4 @@ AvlNode *LL(AvlNode *);
 AvlNode *LR(AvlNode *);
 AvlNode *RL(AvlNode *);
 int GetBalanceFactor(AvlNode *);
-
 #endif

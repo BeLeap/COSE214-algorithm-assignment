@@ -1,6 +1,5 @@
-#ifndef _GENERALH_
-#define _GENERALH_
-
+#ifndef GENERAL_H
+#define GENERAL_H
 #include <stdio.h>
 
 #define ANSI_COLOR_RED "\x1b[31m"
@@ -15,5 +14,4 @@ typedef enum __BOOL {
   FALSE = 0,
   UNKNOWN = -1,
 } BOOL;
-
 #endif

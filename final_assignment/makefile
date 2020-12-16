@@ -8,9 +8,9 @@ $(TARGET): $(OBJS)
 
 index.o: src/index.c lib/general/general.o lib/avl/avl.o
 general.o: lib/general/general.h lib/general/general.c
-vector.o: lib/vector/vector.h lib/vector/vector.c
-avl.o: lib/avl/avl.h lib/avl/avl.c
-linkedlist.o: lib/linkedlist/linkedlist.h lib/linkedlist/linkedlist.c
+vector.o: lib/vector/vector.h lib/vector/vector.c lib/general/general.o
+avl.o: lib/avl/avl.h lib/avl/avl.c lib/general/general.o
+linkedlist.o: lib/linkedlist/linkedlist.h lib/linkedlist/linkedlist.c lib/general/general.o
 
 clear:
 	find . -type f -name '*.o' -delete

@@ -1,5 +1,3 @@
-#ifndef _VECTORH_
-#define _VECTORH_
 #include "../general/general.h"
 
 typedef struct __Vector {
@@ -13,6 +11,9 @@ typedef struct __Vector {
   void* (*PopDataByIndex)(struct __Vector*, int);
   BOOL (*PutDataByIndex)(struct __Vector*, int, void*);
 } Vector;
+
+#ifndef _HEADER_
+#define _HEADER_
 
 Vector NewVector();
 BOOL Push(Vector*, void*);
