@@ -22,35 +22,35 @@ Vector NewVector() {
   return newVector;
 }
 
-BOOL Push(void* data, Vector* self) {
-  return PutDataByIndex(self->length, data, self);
+BOOL Push(Vector* self, void* data) {
+  return PutDataByIndex(self, self->length, data);
 }
 
-void* Pop(Vector* self) { return PopDataByIndex(self->length - 1, self); }
+void* Pop(Vector* self) { return PopDataByIndex(self, self->length - 1); }
 
-void* GetDataByIndex(int index, Vector* self) {
+void* GetDataByIndex(Vector* self, int index) {
   if (index >= self->length) {
     return NULL;
   }
   return self->data[index];
 }
 
-void* PopDataByIndex(int index, Vector* self) {
+void* PopDataByIndex(Vector* self, int index) {
   if (index >= self->length || index < 0) {
     return NULL;
   }
   void* data = self->data[index];
-  __DeleteDataByIndex(index, self);
+  __DeleteDataByIndex(self, index);
   return data;
 }
 
-BOOL PutDataByIndex(int index, void* data, Vector* self) {
+BOOL PutDataByIndex(Vector* self, int index, void* data) {
   self->length++;
   if (index > self->length || index < 0) {
     return FALSE;
   }
 
-  if (!__AdjustCapacity(INCREASING, self)) {
+  if (!__AdjustCapacity(self, INCREASING)) {
     return FALSE;
   }
   for (int i = self->length - 1; i > index; --i) {
@@ -61,7 +61,7 @@ BOOL PutDataByIndex(int index, void* data, Vector* self) {
   return TRUE;
 }
 
-BOOL __AdjustCapacity(FUNCTION func, Vector* self) {
+BOOL __AdjustCapacity(Vector* self, FUNCTION func) {
   if (func == INCREASING) {
     return __EncreaseCapacity(self);
   } else if (func == DECREASING) {
@@ -115,10 +115,10 @@ BOOL __DecreaseCapacity(Vector* self) {
   return TRUE;
 }
 
-BOOL __DeleteDataByIndex(int index, Vector* self) {
+BOOL __DeleteDataByIndex(Vector* self, int index) {
   for (int i = index; i < self->length - 1; ++i) {
     self->data[i - 1] = self->data[i];
   }
   self->length--;
-  return !__AdjustCapacity(DECREASING, self);
+  return !__AdjustCapacity(self, DECREASING);
 }

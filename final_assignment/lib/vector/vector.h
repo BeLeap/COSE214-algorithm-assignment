@@ -7,29 +7,29 @@ typedef struct __Vector {
   int length;
   int capacity;
 
-  BOOL (*Push)(void*, struct __Vector*);
+  BOOL (*Push)(struct __Vector*, void*);
   void* (*Pop)(struct __Vector*);
-  void* (*GetDataByIndex)(int, struct __Vector*);
-  void* (*PopDataByIndex)(int, struct __Vector*);
-  BOOL (*PutDataByIndex)(int, void*, struct __Vector*);
+  void* (*GetDataByIndex)(struct __Vector*, int);
+  void* (*PopDataByIndex)(struct __Vector*, int);
+  BOOL (*PutDataByIndex)(struct __Vector*, int, void*);
 } Vector;
 
 Vector NewVector();
-BOOL Push(void*, Vector*);
+BOOL Push(Vector*, void*);
 void* Pop(Vector*);
 
-void* GetDataByIndex(int, Vector*);
-void* PopDataByIndex(int, Vector*);
-BOOL PutDataByIndex(int, void*, Vector*);
+void* GetDataByIndex(Vector*, int);
+void* PopDataByIndex(Vector*, int);
+BOOL PutDataByIndex(Vector*, int, void*);
 
 typedef enum FUNCTION {
   DECREASING,
   INCREASING,
 } FUNCTION;
 
-BOOL __AdjustCapacity(FUNCTION, Vector*);
+BOOL __AdjustCapacity(Vector*, FUNCTION);
 BOOL __EncreaseCapacity(Vector*);
 BOOL __DecreaseCapacity(Vector*);
 
-BOOL __DeleteDataByIndex(int, Vector*);
+BOOL __DeleteDataByIndex(Vector*, int);
 #endif

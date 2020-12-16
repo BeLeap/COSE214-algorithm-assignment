@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "../lib/general/general.h"
 #include "../lib/vector/vector.h"
@@ -21,16 +22,10 @@ int main(int argc, char* argv[]) {
     if (feof(wordsFile)) {
       break;
     }
-    char* buffer = malloc(sizeof(char) * 100);
+    char* buffer = (char*)malloc(sizeof(char) * 100);
     fgets(buffer, sizeof(buffer), wordsFile);
-    words.Push(buffer, &words);
+    words.Push(&words, buffer);
   }
-
-  void* buff = NULL;
-  while ((buff = words.Pop(&words)) != NULL) {
-    printf("%s, ", (char*)buff);
-  }
-  Println("");
 
   fclose(wordsFile);
   return 0;
