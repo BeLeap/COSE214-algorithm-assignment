@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../lib/dictionary/dictionary.h"
 #include "../lib/general/general.h"
 #include "../lib/linkedlist/linkedlist.h"
 #include "../lib/string/string.h"
