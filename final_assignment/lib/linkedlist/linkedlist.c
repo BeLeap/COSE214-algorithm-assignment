@@ -69,8 +69,7 @@ bool LinkedListDelete(LinkedList* self, int key) {
       return true;
     }
   }
-
-  return UNKNOWN;
+  return false;
 }
 
 bool LinkedListAppend(LinkedList* self, int key, void* data) {
