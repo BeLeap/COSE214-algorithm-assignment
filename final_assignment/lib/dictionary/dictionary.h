@@ -5,9 +5,12 @@
 
 typedef struct __Dictionary {
   int id;
-  char* word;
+  void* data;
+
+  COMPARE (*Compare)(void*, void*);
 } Dictionary;
 
+Dictionary* NewDictionary(int, void*);
 COMPARE DictionaryCompare(void*, void*);
 
 #endif

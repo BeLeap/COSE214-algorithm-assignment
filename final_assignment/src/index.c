@@ -2,12 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../lib/dictionary/dictionary.h"
 #include "../lib/general/general.h"
 #include "../lib/linkedlist/linkedlist.h"
 #include "../lib/string/string.h"
 
 LinkedList* getWordsFromFile(char*);
 LinkedList* generate2GramList();
+LinkedList* generate2GramWordList(LinkedList*, LinkedList*);
 
 int main(int argc, char* argv[]) {
   if (argc != 2) {
@@ -20,6 +22,9 @@ int main(int argc, char* argv[]) {
 
   LinkedList* twoGramList = generate2GramList();
   PrintInfo("Generate gram list completed");
+
+  LinkedList* twoGramWordsList = generate2GramWordList(twoGramList, words);
+  PrintInfo("Generate gram word list completed");
 
   return 0;
 }
@@ -67,4 +72,24 @@ LinkedList* generate2GramList() {
   }
 
   return twoGramList;
+}
+
+LinkedList* generate2GramWordList(LinkedList* twoGramList, LinkedList* words) {
+  String* twoGram;
+  LinkedList* twoGramWordsList = NewLinkedList(DictionaryCompare);
+  for (int i = 0; (twoGram = twoGramList->Delete(twoGramList, 0)) != NULL;
+       ++i) {
+    String* word;
+    LinkedList* wordsList = NewLinkedList(DictionaryCompare);
+    for (int j = 0; (word = words->Search(words, j)) != NULL; ++j) {
+      if (word->Include(word, twoGram)) {
+        Dictionary* wordDict = NewDictionary(j, word);
+        wordsList->Insert(wordsList, i, wordDict);
+      }
+    }
+    Dictionary* twoGramWordsDict = NewDictionary(i, wordsList);
+    twoGramWordsList->Insert(twoGramWordsList, i, twoGramWordsDict);
+  }
+
+  return twoGramWordsList;
 }

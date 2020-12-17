@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-g -Wall
-OBJS=src/index.o lib/general/general.o lib/linkedlist/linkedlist.o lib/string/string.o
+OBJS=src/index.o lib/general/general.o lib/linkedlist/linkedlist.o lib/string/string.o lib/dictionary/dictionary.o
 TARGET=index
 
 $(TARGET): $(OBJS)
@@ -12,6 +12,7 @@ vector.o: lib/vector/vector.h lib/vector/vector.c lib/general/general.o
 avl.o: lib/avl/avl.h lib/avl/avl.c lib/general/general.o
 linkedlist.o: lib/linkedlist/linkedlist.h lib/linkedlist/linkedlist.c lib/general/general.o
 string.o: lib/string/string.h lib/string/string.c
+dictionary.o: lib/dictionary/dictionary.h lib/dictionary/dictionary.c lib/general/general.o
 
 clear:
 	find . -type f -name '*.o' -delete

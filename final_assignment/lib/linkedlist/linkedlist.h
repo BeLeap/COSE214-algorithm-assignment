@@ -17,14 +17,15 @@ typedef struct __LinkedList {
   COMPARE (*Compare)(void*, void*);
 
   bool (*Insert)(struct __LinkedList*, int, void*);
-  bool (*Delete)(struct __LinkedList*, int);
+  void* (*Delete)(struct __LinkedList*, int);
   bool (*Append)(struct __LinkedList*, int, void*);
+  void* (*Search)(struct __LinkedList*, int);
 } LinkedList;
 
 LinkedList* NewLinkedList(void*);
 
 bool LinkedListInsert(LinkedList*, int, void*);
-bool LinkedListDelete(LinkedList*, int);
+void* LinkedListDelete(LinkedList*, int);
 bool LinkedListAppend(LinkedList*, int, void*);
 void* LinkedListSearch(LinkedList*, int);
 #endif

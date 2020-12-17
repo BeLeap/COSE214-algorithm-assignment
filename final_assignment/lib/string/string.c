@@ -9,6 +9,8 @@ String* NewString(char* value) {
   newString->length = strlen(value);
 
   newString->Append = StringAppend;
+  newString->Compare = StringCompare;
+  newString->Include = StringInclude;
 
   return newString;
 }
@@ -30,4 +32,11 @@ COMPARE StringCompare(void* a, void* b) {
   } else {
     return EQUAL;
   }
+}
+
+bool StringInclude(String* self, String* target) {
+  if (strstr(self->value, target->value) != NULL) {
+    return true;
+  }
+  return false;
 }

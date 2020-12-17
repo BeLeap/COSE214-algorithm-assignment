@@ -13,6 +13,7 @@ LinkedList* NewLinkedList(void* Compare) {
   newLinkedList->Insert = LinkedListInsert;
   newLinkedList->Delete = LinkedListDelete;
   newLinkedList->Append = LinkedListAppend;
+  newLinkedList->Search = LinkedListSearch;
 
   return newLinkedList;
 }
@@ -53,23 +54,31 @@ bool LinkedListInsert(LinkedList* self, int key, void* data) {
   return true;
 }
 
-bool LinkedListDelete(LinkedList* self, int key) {
+void* LinkedListDelete(LinkedList* self, int key) {
   Node* prev = NULL;
   Node* curr = self->head;
+
+  if (curr->key == key) {
+    self->head = curr->next;
+    void* data = curr->data;
+    free(curr);
+    return data;
+  }
 
   while (key > curr->key) {
     prev = curr;
     curr = curr->next;
     if (curr == NULL) {
-      return false;
+      return NULL;
     }
     if (key == curr->key) {
       prev->next = curr->next;
+      void* data = curr->data;
       free(curr);
-      return true;
+      return data;
     }
   }
-  return false;
+  return NULL;
 }
 
 bool LinkedListAppend(LinkedList* self, int key, void* data) {
@@ -89,4 +98,24 @@ bool LinkedListAppend(LinkedList* self, int key, void* data) {
   self->tail->next = newNode;
   self->tail = newNode;
   return true;
+}
+
+void* LinkedListSearch(LinkedList* self, int key) {
+  Node* curr = self->head;
+  if (curr->key == key) {
+    return curr->data;
+  } else if (curr->key > key) {
+    return NULL;
+  }
+
+  while (key > curr->key) {
+    curr = curr->next;
+    if (curr == NULL) {
+      return NULL;
+    }
+    if (key == curr->key) {
+      return curr->data;
+    }
+  }
+  return NULL;
 }
