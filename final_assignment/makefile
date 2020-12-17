@@ -25,4 +25,5 @@ search.o: src/search.c
 clear:
 	find . -type f -name '*.o' -delete
 	rm index
+	rm search
 	rm resource/dist/*
