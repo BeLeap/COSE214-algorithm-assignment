@@ -14,7 +14,7 @@ typedef struct __LinkedList {
   Node* head;
   Node* tail;
 
-  COMPARE (*Compoare)(void*, void*);
+  COMPARE (*Compare)(void*, void*);
 
   bool (*Insert)(struct __LinkedList*, int, void*);
   bool (*Delete)(struct __LinkedList*, int);

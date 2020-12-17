@@ -8,7 +8,7 @@ LinkedList* NewLinkedList(void* Compare) {
   newLinkedList->head = NULL;
   newLinkedList->tail = NULL;
 
-  newLinkedList->Compoare = Compare;
+  newLinkedList->Compare = Compare;
 
   newLinkedList->Insert = LinkedListInsert;
   newLinkedList->Delete = LinkedListDelete;
