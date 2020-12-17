@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,9 +11,10 @@
 LinkedList* getWordsFromFile(char*);
 LinkedList* generate2GramList();
 LinkedList* generate2GramWordList(LinkedList*, LinkedList*);
+bool write2GramWordsListToFile(LinkedList*, char*);
 
 int main(int argc, char* argv[]) {
-  if (argc != 2) {
+  if (argc != 3) {
     PrintError("Not enough arguments");
     return 1;
   }
@@ -25,6 +27,10 @@ int main(int argc, char* argv[]) {
 
   LinkedList* twoGramWordsList = generate2GramWordList(twoGramList, words);
   PrintInfo("Generate gram word list completed");
+
+  if (!write2GramWordsListToFile(twoGramWordsList, argv[2])) {
+    return 1;
+  }
 
   return 0;
 }
@@ -76,20 +82,46 @@ LinkedList* generate2GramList() {
 
 LinkedList* generate2GramWordList(LinkedList* twoGramList, LinkedList* words) {
   String* twoGram;
-  LinkedList* twoGramWordsList = NewLinkedList(DictionaryCompare);
-  for (int i = 0; (twoGram = twoGramList->Delete(twoGramList, 0)) != NULL;
-       ++i) {
+  LinkedList* twoGramWordsList = NewLinkedList(StringCompare);
+  for (int i = 0;
+       (twoGram = twoGramList->GetDataByIndex(twoGramList, i)) != NULL; ++i) {
     String* word;
-    LinkedList* wordsList = NewLinkedList(DictionaryCompare);
-    for (int j = 0; (word = words->Search(words, j)) != NULL; ++j) {
+    LinkedList* wordsList = NewLinkedList(StringCompare);
+    for (int j = 0; (word = words->GetDataByIndex(words, j)) != NULL; ++j) {
       if (word->Include(word, twoGram)) {
-        Dictionary* wordDict = NewDictionary(j, word);
-        wordsList->Insert(wordsList, i, wordDict);
+        wordsList->Insert(wordsList, j, word);
       }
     }
-    Dictionary* twoGramWordsDict = NewDictionary(i, wordsList);
-    twoGramWordsList->Insert(twoGramWordsList, i, twoGramWordsDict);
+    twoGramWordsList->Insert(twoGramWordsList, i, wordsList);
   }
 
   return twoGramWordsList;
+}
+
+bool write2GramWordsListToFile(LinkedList* twoGramWordsList, char* dirname) {
+  char listFileName[100];
+  LinkedList* twoGram;
+  for (int i = 0; (twoGram = twoGramWordsList->GetDataByIndex(twoGramWordsList,
+                                                              i)) != NULL;
+       ++i) {
+    strcpy(listFileName, "\0");
+    strcat(listFileName, dirname);
+    char fileId[5];
+    sprintf(fileId, "%d", i);
+    strcat(listFileName, "/");
+    strcat(listFileName, fileId);
+    strcat(listFileName, ".txt");
+    FILE* wordListFile = fopen(listFileName, "w");
+
+    fprintf(wordListFile, "%d\n", i);
+
+    String* word;
+    int key;
+    for (int j = 0; (key = twoGram->GetKeyByIndex(twoGram, j)) != NULL; ++j) {
+      printf("%d\n", key);
+      fprintf(wordListFile, "%d\n", key);
+    }
+
+    fclose(wordListFile);
+  }
 }

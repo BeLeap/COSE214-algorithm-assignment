@@ -12,20 +12,22 @@ typedef struct __Node {
 
 typedef struct __LinkedList {
   Node* head;
-  Node* tail;
+  int length;
 
   COMPARE (*Compare)(void*, void*);
 
   bool (*Insert)(struct __LinkedList*, int, void*);
   void* (*Delete)(struct __LinkedList*, int);
-  bool (*Append)(struct __LinkedList*, int, void*);
   void* (*Search)(struct __LinkedList*, int);
+  int (*GetKeyByIndex)(struct __LinkedList*, int);
+  void* (*GetDataByIndex)(struct __LinkedList*, int);
 } LinkedList;
 
 LinkedList* NewLinkedList(void*);
 
 bool LinkedListInsert(LinkedList*, int, void*);
 void* LinkedListDelete(LinkedList*, int);
-bool LinkedListAppend(LinkedList*, int, void*);
 void* LinkedListSearch(LinkedList*, int);
+int LinkedListGetKeyByIndex(LinkedList*, int);
+void* LinkedListGetDataByIndex(LinkedList*, int);
 #endif

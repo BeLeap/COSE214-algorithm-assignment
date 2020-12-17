@@ -17,3 +17,4 @@ dictionary.o: lib/dictionary/dictionary.h lib/dictionary/dictionary.c lib/genera
 clear:
 	find . -type f -name '*.o' -delete
 	rm index
+	rm resource/dist/*
