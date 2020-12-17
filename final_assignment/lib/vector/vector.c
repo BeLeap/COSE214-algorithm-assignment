@@ -22,7 +22,7 @@ Vector NewVector() {
   return newVector;
 }
 
-BOOL Push(Vector* self, void* data) {
+bool Push(Vector* self, void* data) {
   return PutDataByIndex(self, self->length, data);
 }
 
@@ -44,33 +44,33 @@ void* PopDataByIndex(Vector* self, int index) {
   return data;
 }
 
-BOOL PutDataByIndex(Vector* self, int index, void* data) {
+bool PutDataByIndex(Vector* self, int index, void* data) {
   self->length++;
   if (index > self->length || index < 0) {
-    return FALSE;
+    return false;
   }
 
   if (!__AdjustCapacity(self, INCREASING)) {
-    return FALSE;
+    return false;
   }
   for (int i = self->length - 1; i > index; --i) {
     self->data[i + 1] = self->data[i];
   }
   self->data[index] = data;
 
-  return TRUE;
+  return true;
 }
 
-BOOL __AdjustCapacity(Vector* self, FUNCTION func) {
+bool __AdjustCapacity(Vector* self, FUNCTION func) {
   if (func == INCREASING) {
     return __EncreaseCapacity(self);
   } else if (func == DECREASING) {
     return __DecreaseCapacity(self);
   }
-  return TRUE;
+  return true;
 }
 
-BOOL __EncreaseCapacity(Vector* self) {
+bool __EncreaseCapacity(Vector* self) {
   if (self->capacity < self->length) {
     int capacity = self->capacity;
 
@@ -83,15 +83,15 @@ BOOL __EncreaseCapacity(Vector* self) {
     self->data = (void**)realloc(self->data, sizeof(void*) * capacity);
     if (self->data == NULL) {
       PrintError("Failed to allocate memory");
-      return FALSE;
+      return false;
     }
     self->capacity = capacity;
   }
 
-  return TRUE;
+  return true;
 }
 
-BOOL __DecreaseCapacity(Vector* self) {
+bool __DecreaseCapacity(Vector* self) {
   int capacity = self->capacity;
   if (capacity < 8) {
     capacity--;
@@ -104,7 +104,7 @@ BOOL __DecreaseCapacity(Vector* self) {
     void** temp = (void**)malloc(sizeof(void*) * capacity);
     if (temp == NULL) {
       PrintError("Failed to allocate memory");
-      return FALSE;
+      return false;
     }
     memcpy(temp, self->data, sizeof(void*) * self->length);
     free(self->data);
@@ -112,10 +112,10 @@ BOOL __DecreaseCapacity(Vector* self) {
     self->capacity = capacity;
   }
 
-  return TRUE;
+  return true;
 }
 
-BOOL __DeleteDataByIndex(Vector* self, int index) {
+bool __DeleteDataByIndex(Vector* self, int index) {
   for (int i = index; i < self->length - 1; ++i) {
     self->data[i - 1] = self->data[i];
   }

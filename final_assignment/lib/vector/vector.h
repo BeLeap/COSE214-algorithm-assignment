@@ -1,3 +1,7 @@
+#ifndef VECTOR_H
+#define VECTOR_H
+#include <stdbool.h>
+
 #include "../general/general.h"
 
 typedef struct __Vector {
@@ -5,32 +9,29 @@ typedef struct __Vector {
   int length;
   int capacity;
 
-  BOOL (*Push)(struct __Vector*, void*);
+  bool (*Push)(struct __Vector*, void*);
   void* (*Pop)(struct __Vector*);
   void* (*GetDataByIndex)(struct __Vector*, int);
   void* (*PopDataByIndex)(struct __Vector*, int);
-  BOOL (*PutDataByIndex)(struct __Vector*, int, void*);
+  bool (*PutDataByIndex)(struct __Vector*, int, void*);
 } Vector;
 
-#ifndef _HEADER_
-#define _HEADER_
-
 Vector NewVector();
-BOOL Push(Vector*, void*);
+bool Push(Vector*, void*);
 void* Pop(Vector*);
 
 void* GetDataByIndex(Vector*, int);
 void* PopDataByIndex(Vector*, int);
-BOOL PutDataByIndex(Vector*, int, void*);
+bool PutDataByIndex(Vector*, int, void*);
 
 typedef enum FUNCTION {
   DECREASING,
   INCREASING,
 } FUNCTION;
 
-BOOL __AdjustCapacity(Vector*, FUNCTION);
-BOOL __EncreaseCapacity(Vector*);
-BOOL __DecreaseCapacity(Vector*);
+bool __AdjustCapacity(Vector*, FUNCTION);
+bool __EncreaseCapacity(Vector*);
+bool __DecreaseCapacity(Vector*);
 
-BOOL __DeleteDataByIndex(Vector*, int);
+bool __DeleteDataByIndex(Vector*, int);
 #endif

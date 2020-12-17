@@ -1,5 +1,7 @@
 #ifndef LINKEDLIST_H
 #define LINKEDLIST_h
+#include <stdbool.h>
+
 #include "../general/general.h"
 
 typedef struct __Node {
@@ -14,15 +16,15 @@ typedef struct __LinkedList {
 
   COMPARE (*Compoare)(void*, void*);
 
-  BOOL (*Insert)(struct __LinkedList*, int, void*);
-  BOOL (*Delete)(struct __LinkedList*, int);
-  BOOL (*Append)(struct __LinkedList*, int, void*);
+  bool (*Insert)(struct __LinkedList*, int, void*);
+  bool (*Delete)(struct __LinkedList*, int);
+  bool (*Append)(struct __LinkedList*, int, void*);
 } LinkedList;
 
 LinkedList* NewLinkedList(void*);
 
-BOOL LinkedListInsert(LinkedList*, int, void*);
-BOOL LinkedListDelete(LinkedList*, int);
-BOOL LinkedListAppend(LinkedList*, int, void*);
+bool LinkedListInsert(LinkedList*, int, void*);
+bool LinkedListDelete(LinkedList*, int);
+bool LinkedListAppend(LinkedList*, int, void*);
 void* LinkedListSearch(LinkedList*, int);
 #endif

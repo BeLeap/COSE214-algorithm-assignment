@@ -17,11 +17,11 @@ LinkedList* NewLinkedList(void* Compare) {
   return newLinkedList;
 }
 
-BOOL LinkedListInsert(LinkedList* self, int key, void* data) {
+bool LinkedListInsert(LinkedList* self, int key, void* data) {
   Node* newNode = (Node*)malloc(sizeof(Node));
   if (newNode == NULL) {
     PrintError("Failed to allocate memory");
-    return FALSE;
+    return false;
   }
   newNode->key = key;
   newNode->data = data;
@@ -29,7 +29,7 @@ BOOL LinkedListInsert(LinkedList* self, int key, void* data) {
   if (self->head == NULL) {
     self->head = newNode;
     self->tail = newNode;
-    return TRUE;
+    return true;
   }
 
   Node* prev = NULL;
@@ -50,10 +50,10 @@ BOOL LinkedListInsert(LinkedList* self, int key, void* data) {
     newNode->next = curr;
   }
 
-  return TRUE;
+  return true;
 }
 
-BOOL LinkedListDelete(LinkedList* self, int key) {
+bool LinkedListDelete(LinkedList* self, int key) {
   Node* prev = NULL;
   Node* curr = self->head;
 
@@ -61,23 +61,23 @@ BOOL LinkedListDelete(LinkedList* self, int key) {
     prev = curr;
     curr = curr->next;
     if (curr == NULL) {
-      return FALSE;
+      return false;
     }
     if (key == curr->key) {
       prev->next = curr->next;
       free(curr);
-      return TRUE;
+      return true;
     }
   }
 
   return UNKNOWN;
 }
 
-BOOL LinkedListAppend(LinkedList* self, int key, void* data) {
+bool LinkedListAppend(LinkedList* self, int key, void* data) {
   Node* newNode = (Node*)malloc(sizeof(Node));
   if (newNode == NULL) {
     PrintError("Failed to allocate memory");
-    return FALSE;
+    return false;
   }
   newNode->key = key;
   newNode->data = data;
@@ -85,9 +85,9 @@ BOOL LinkedListAppend(LinkedList* self, int key, void* data) {
   if (self->head == NULL) {
     self->head = newNode;
     self->tail = newNode;
-    return TRUE;
+    return true;
   }
   self->tail->next = newNode;
   self->tail = newNode;
-  return TRUE;
+  return true;
 }

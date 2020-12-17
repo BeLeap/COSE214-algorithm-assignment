@@ -34,7 +34,7 @@ LinkedList* getWordsFromFile(char* filename) {
   }
 
   int count = 0;
-  while (TRUE) {
+  while (true) {
     if (feof(wordsFile)) {
       break;
     }

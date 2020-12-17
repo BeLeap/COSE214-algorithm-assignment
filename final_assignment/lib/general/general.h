@@ -11,12 +11,6 @@ void PrintError(char[]);
 void PrintInfo(char[]);
 void Println(char[]);
 
-typedef enum __BOOL {
-  TRUE = 1,
-  FALSE = 0,
-  UNKNOWN = -1,
-} BOOL;
-
 typedef enum __COMPARE {
   BIGGER,
   SMALLER,
