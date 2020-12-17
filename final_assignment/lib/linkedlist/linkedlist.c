@@ -92,15 +92,17 @@ void* LinkedListSearch(LinkedList* self, int key) {
   Node* curr = self->head;
   if (curr == NULL) {
     return NULL;
+  } else if (key < 0) {
+    return NULL;
   }
 
   if (curr->key == key) {
     return curr->data;
-  } else if (curr->key < key) {
+  } else if (curr->key > key) {
     return NULL;
   }
 
-  while (key < curr->key) {
+  while (key > curr->key) {
     curr = curr->next;
     if (curr == NULL) {
       return NULL;
@@ -115,16 +117,16 @@ void* LinkedListSearch(LinkedList* self, int key) {
 int LinkedListGetKeyByIndex(LinkedList* self, int index) {
   Node* curr = self->head;
   if (curr == NULL) {
-    return NULL;
+    return -1;
   }
 
-  if (index > self->length) {
-    return NULL;
+  if (index > self->length - 1) {
+    return -1;
   }
 
   for (int i = 0; i < index; ++i) {
     if (curr->next == NULL) {
-      return NULL;
+      return -1;
     }
     curr = curr->next;
   }

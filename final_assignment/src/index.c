@@ -115,10 +115,8 @@ bool write2GramWordsListToFile(LinkedList* twoGramWordsList, char* dirname) {
 
     fprintf(wordListFile, "%d\n", i);
 
-    String* word;
     int key;
-    for (int j = 0; (key = twoGram->GetKeyByIndex(twoGram, j)) != NULL; ++j) {
-      printf("%d\n", key);
+    for (int j = 0; (key = twoGram->GetKeyByIndex(twoGram, j)) != -1; ++j) {
       fprintf(wordListFile, "%d\n", key);
     }
 
