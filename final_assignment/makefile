@@ -9,8 +9,8 @@ all: index search
 index: src/index.o lib/general/general.o lib/linkedlist/linkedlist.o lib/string/string.o
 	gcc -o index src/index.o lib/general/general.o lib/linkedlist/linkedlist.o lib/string/string.o
 
-search: src/search.o
-	gcc -o search src/search.o
+search: src/search.o lib/general/general.o
+	gcc -o search src/search.o lib/general/general.o
 
 index.o: src/index.c
 general.o: lib/general/general.h lib/general/general.c
