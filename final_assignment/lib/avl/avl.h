@@ -2,10 +2,10 @@
 #define AVL_H
 #include "../general/general.h"
 
-typedef struct __Node {
+typedef struct __AvlNode {
   int key;
   void *wordList;
-  struct __Node *left, *right;
+  struct __AvlNode *left, *right;
   int height;
 } AvlNode;
 

@@ -3,6 +3,7 @@
 
 #include "../linkedlist/linkedlist.h"
 
+LinkedList* getWordsFromFile(FILE*);
 LinkedList* generate2GramList();
 
 #endif

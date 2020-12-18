@@ -8,7 +8,6 @@
 #include "../lib/share/share.h"
 #include "../lib/string/string.h"
 
-LinkedList* getWordsFromFile(char*);
 LinkedList* generate2GramWordList(LinkedList*, LinkedList*);
 bool write2GramWordsListToFile(LinkedList*, char*);
 
@@ -18,7 +17,7 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  LinkedList* words = getWordsFromFile(argv[1]);
+  LinkedList* words = getWordsFromFile(fopen(argv[1], "r"));
   PrintInfo("File read completed");
 
   LinkedList* twoGramList = generate2GramList();
@@ -32,50 +31,6 @@ int main(int argc, char* argv[]) {
   }
 
   return 0;
-}
-
-LinkedList* getWordsFromFile(char* filename) {
-  LinkedList* words = NewLinkedList(StringCompare);
-
-  FILE* wordsFile = fopen(filename, "r");
-  if (wordsFile == NULL) {
-    PrintError("Failed to open file");
-    return words;
-  }
-
-  int count = 0;
-  while (true) {
-    if (feof(wordsFile)) {
-      break;
-    }
-    char buffer[100];
-    fscanf(wordsFile, "%s", buffer);
-    String* word = NewString(buffer);
-    words->Insert(words, count, (void*)word);
-    count++;
-  }
-
-  fclose(wordsFile);
-
-  return words;
-}
-
-LinkedList* generate2GramWordList(LinkedList* twoGramList, LinkedList* words) {
-  String* twoGram;
-  LinkedList* twoGramWordsList = NewLinkedList(StringCompare);
-  for (int i = 0;
-       (twoGram = twoGramList->GetDataByIndex(twoGramList, i)) != NULL; ++i) {
-    String* word;
-    LinkedList* wordsList = NewLinkedList(StringCompare);
-    for (int j = 0; (word = words->GetDataByIndex(words, j)) != NULL; ++j) {
-      if (word->Include(word, twoGram)) {
-        wordsList->Insert(wordsList, j, word);
-      }
-    }
-    twoGramWordsList->Insert(twoGramWordsList, i, wordsList);
-  }
-
-  return twoGramWordsList;
 }
 
 bool write2GramWordsListToFile(LinkedList* twoGramWordsList, char* dirname) {
