@@ -14,6 +14,7 @@ void PrintInfo(char info[]) {
           ANSI_COLOR_YELLOW "[!] " ANSI_COLOR_GREEN "INFO: %s\n" ANSI_COLOR_RESET,
           info
   );
+  rewind(stdout);
   // clang-format on
 }
 

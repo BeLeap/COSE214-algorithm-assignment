@@ -5,8 +5,9 @@
 
 String* NewString(char* value) {
   String* newString = (String*)malloc(sizeof(String));
-  newString->value = strdup(value);
   newString->length = strlen(value);
+  newString->value = (char*)malloc(sizeof(char) * newString->length);
+  strcpy(newString->value, value);
 
   newString->Append = StringAppend;
   newString->Compare = StringCompare;
@@ -17,7 +18,8 @@ String* NewString(char* value) {
 
 void StringAppend(String* self, char* value) {
   self->length = strlen(self->value) + strlen(value);
-  self->value = strdup(strcat(self->value, value));
+  self->value = (char*)realloc(self->value, sizeof(char) * self->length);
+  strcat(self->value, value);
 }
 
 COMPARE StringCompare(void* a, void* b) {

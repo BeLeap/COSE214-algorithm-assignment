@@ -2,5 +2,5 @@
 
 pwd
 make
-./index resource/test.txt resources/dist
+./index resource/test.txt resource/dist
 make clear
