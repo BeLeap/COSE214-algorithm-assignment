@@ -5,29 +5,32 @@
 
 #include "../lib/general/general.h"
 
-bool IsExists(char*, char*);
+bool IsExists(char*, int);
 
 int main(int argc, char* argv[]) {
-  if (argc != 3) {
+  if (argc != 2) {
     PrintError("Not enough arguments");
     return 1;
   }
 
-  for (int i = (int)'a'; i <= 'z'; ++i) {
-    for (int j = (int)'a'; j <= 'z'; ++j) {
-      char distFileName[100] = {
+  for (int i = (int)'a'; i <= (int)'z'; ++i) {
+    for (int j = (int)'a'; j <= (int)'z'; ++j) {
+      char indexFileName[100] = {
           0,
       };
-      sprintf(distFileName, "%s/%c%c.txt", argv[2], (char)i, (char)j);
-
-      FILE* indexFile = fopen(distFileName, "w");
-      fprintf(indexFile, "\0");
-      fclose(indexFile);
+      sprintf(indexFileName, "%c%c.txt", (char)i, (char)j);
+      remove(indexFileName);
+      fclose(fopen(indexFileName, "w"));
     }
   }
+  remove("word_id.txt");
+  fclose(fopen("word_id.txt", "w"));
 
   FILE* dictionary = fopen(argv[1], "r");
 
+  FILE* wordIdFile = fopen("word_id.txt", "w");
+
+  int count = 0;
   while (true) {
     if (feof(dictionary)) {
       break;
@@ -35,22 +38,23 @@ int main(int argc, char* argv[]) {
 
     char buffer[100];
     fscanf(dictionary, "%s", buffer);
+    count++;
+    fprintf(wordIdFile, "%s %d\n", buffer, count);
 
     for (int i = 0; i < strlen(buffer) - 1; ++i) {
-      char distFileName[100] = {
+      char indexFileName[100] = {
           0,
       };
-      sprintf(distFileName, "%s/%c%c.txt", argv[2], buffer[i], buffer[i + 1]);
+      sprintf(indexFileName, "%c%c.txt", buffer[i], buffer[i + 1]);
+      printf("%s\n", indexFileName);
 
-      if (!IsExists(distFileName, buffer)) {
-        FILE* indexFile = fopen(distFileName, "a");
+      if (!IsExists(indexFileName, count)) {
+        FILE* indexFile = fopen(indexFileName, "a");
         if (indexFile == NULL) {
           PrintError("Failed to open file");
           continue;
         }
-        setvbuf(indexFile, NULL, _IONBF, 0);
-        // printf("%s\n", buffer);
-        fprintf(indexFile, "%s\n", buffer);
+        fprintf(indexFile, "%d\n", count);
         fclose(indexFile);
       }
     }
@@ -61,16 +65,20 @@ int main(int argc, char* argv[]) {
   return 0;
 }
 
-bool IsExists(char* filename, char* word) {
+bool IsExists(char* filename, int wordId) {
   FILE* fp = fopen(filename, "r");
+  if (fp == NULL) {
+    return false;
+  }
+
   while (true) {
     if (feof(fp)) {
       return false;
     }
 
-    char buffer[100];
-    fscanf(fp, "%s", buffer);
-    if (!strcmp(buffer, word)) {
+    int buffer;
+    fscanf(fp, "%d", &buffer);
+    if (buffer == wordId) {
       return true;
     }
   }
