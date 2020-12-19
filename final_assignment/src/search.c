@@ -37,7 +37,10 @@ int main(int argc, char* argv[]) {  // indexFile
     for (int i = 0; i < strlen(input) - 1; ++i) {
       char indexFileName[100];
       sprintf(indexFileName, "%c%c.index", input[i], input[i + 1]);
-      printf("Processing %c%c\n", input[i], input[i + 1]);
+      // clang-format off
+      printf(ANSI_COLOR_YELLOW "[!] " ANSI_COLOR_GREEN "INFO: Processing %c%c\n" ANSI_COLOR_RESET,
+             input[i], input[i + 1]);
+      // clang-format on
       FILE* indexFile = fopen(indexFileName, "rb");
       if (indexFile == NULL) {
         PrintError("Failed to open file");
@@ -47,6 +50,7 @@ int main(int argc, char* argv[]) {  // indexFile
       while (true) {
         int wordId = 0;
         int temp = fread(&wordId, sizeof(int), 1, indexFile);
+        // printf("found %d\n", wordId);
         if (temp == 1) {
           if (wordId == 0) continue;
           freqList->UpdateOrInsert_Freq(freqList, wordId);
@@ -80,6 +84,7 @@ int main(int argc, char* argv[]) {  // indexFile
       FindWord(wordIdFile, wordId, buffer);
       int distance = min_editdistance(input, buffer);
       distanceList->Insert_Distance(distanceList, wordId, distance);
+      int temp = min_editdistance(input, buffer);
 
       if (prev_freq != freq && prev_freq != 0) {
         while (count < 10) {
@@ -202,5 +207,5 @@ int min_editdistance(char* str1, char* str2) {
     }
   }
 
-  return d[m][n];
+  return d[n][m];
 }
