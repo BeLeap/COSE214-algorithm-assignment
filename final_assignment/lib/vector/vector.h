@@ -17,6 +17,7 @@ typedef struct __Vector {
 } Vector;
 
 Vector NewVector();
+
 bool Push(Vector*, void*);
 void* Pop(Vector*);
 

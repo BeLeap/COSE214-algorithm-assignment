@@ -8,11 +8,8 @@
             "name": "gcc - Build and debug active file",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/index",
-            "args": [
-                "resource/test.txt",
-                "resource/dist"
-            ],
+            "program": "${workspaceFolder}/${fileBasenameNoExtension}",
+            "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

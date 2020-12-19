@@ -18,7 +18,7 @@ int main(int argc, char* argv[]) {
       char indexFileName[100] = {
           0,
       };
-      sprintf(indexFileName, "%c%c.txt", (char)i, (char)j);
+      sprintf(indexFileName, "%c%c.index", (char)i, (char)j);
       remove(indexFileName);
       fclose(fopen(indexFileName, "w"));
     }
@@ -42,8 +42,8 @@ int main(int argc, char* argv[]) {
       char indexFileName[100] = {
           0,
       };
-      sprintf(indexFileName, "%c%c.txt", buffer[i], buffer[i + 1]);
-      FILE* indexFile = fopen(indexFileName, "a+b");
+      sprintf(indexFileName, "%c%c.index", buffer[i], buffer[i + 1]);
+      FILE* indexFile = fopen(indexFileName, "ab");
 
       if (!IsExists(indexFileName, count)) {
         if (indexFile == NULL) {
@@ -54,6 +54,10 @@ int main(int argc, char* argv[]) {
         fwrite(&count, sizeof(int), 1, indexFile);
       }
       fclose(indexFile);
+    }
+
+    if (!(count % 100000)) {
+      printf("Currently Processing: %d\n", count);
     }
   }
 

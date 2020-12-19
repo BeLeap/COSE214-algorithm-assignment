@@ -3,136 +3,153 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-LinkedList* NewLinkedList(void* Compare) {
+LinkedList* NewLinkedList() {
   LinkedList* newLinkedList = (LinkedList*)malloc(sizeof(LinkedList));
   newLinkedList->head = NULL;
 
-  newLinkedList->Compare = Compare;
-
-  newLinkedList->Insert = LinkedListInsert;
-  newLinkedList->Delete = LinkedListDelete;
-  newLinkedList->Search = LinkedListSearch;
-  newLinkedList->GetKeyByIndex = LinkedListGetKeyByIndex;
-  newLinkedList->GetDataByIndex = LinkedListGetDataByIndex;
+  newLinkedList->UpdateOrInsert_Freq = LinkedListUpdateOrInsert_Freq;
+  newLinkedList->Insert_Distance = LinkedListInsert_Distance;
+  newLinkedList->PopMaxDataWordId_Freq = LinkedListPopMaxDataWordId_Freq;
+  newLinkedList->PopHead_Distance = LinkedListPopHead_Distance;
 
   return newLinkedList;
 }
 
-bool LinkedListInsert(LinkedList* self, int key, void* data) {
-  Node* newNode = (Node*)malloc(sizeof(Node));
-  if (newNode == NULL) {
-    PrintError("Failed to allocate memory");
-    return false;
-  }
-  newNode->key = key;
-  newNode->data = data;
+Node* NewNode_Freq(int wordId) {
+  Node* newNode = (Node*)malloc(sizeof(newNode));
+  newNode->key = wordId;
+  newNode->data = 1;
+  return newNode;
+}
 
-  if (self->head == NULL) {
+void LinkedListUpdateOrInsert_Freq(LinkedList* self, int wordId) {
+  Node* curr = self->head;
+  if (curr == NULL) {
+    Node* newNode = NewNode_Freq(wordId);
     self->head = newNode;
-    self->length = 1;
-    return true;
+    return;
+  }
+
+  if (wordId > curr->key) {
+    Node* newNode = NewNode_Freq(wordId);
+    self->head = newNode;
+    newNode->next = curr;
+    return;
   }
 
   Node* prev = NULL;
-  Node* curr = self->head;
-  while (key > curr->key) {
+  while (wordId < curr->key) {
     prev = curr;
     curr = curr->next;
     if (curr == NULL) {
+      Node* newNode = NewNode_Freq(wordId);
+      prev->next = newNode;
+      return;
+    }
+
+    if (curr->key == wordId) {
+      curr->data++;
+      return;
+    }
+  }
+  Node* newNode = NewNode_Freq(wordId);
+  if (prev != NULL) {
+    prev->next = newNode;
+  } else {
+    self->head = newNode;
+  }
+  newNode->next = curr;
+  return;
+}
+
+Node* NewNode_Distance(int wordId, int distance) {
+  Node* newNode = (Node*)malloc(sizeof(newNode));
+  newNode->key = distance;
+  newNode->data = wordId;
+  return newNode;
+}
+
+void LinkedListInsert_Distance(LinkedList* self, int wordId, int distance) {
+  Node* curr = self->head;
+  if (curr == NULL) {
+    Node* newNode = NewNode_Distance(wordId, distance);
+    self->head = newNode;
+    return;
+  }
+
+  if (distance < curr->key) {
+    Node* newNode = NewNode_Distance(wordId, distance);
+    self->head = newNode;
+    newNode->next = curr;
+    return;
+  }
+
+  Node* prev = NULL;
+  while (distance > curr->key) {
+    prev = curr;
+    curr = curr->next;
+    if (curr == NULL) {
+      Node* newNode = NewNode_Distance(wordId, distance);
+      prev->next = newNode;
+      return;
+    }
+
+    if (curr->key == distance) {
       break;
     }
   }
-
-  if (curr == self->head) {
-    self->head = newNode;
-    newNode->next = curr;
-  } else {
+  Node* newNode = NewNode_Distance(wordId, distance);
+  if (prev != NULL) {
     prev->next = newNode;
-    newNode->next = curr;
+  } else {
+    self->head = newNode;
   }
-
-  self->length++;
-  return true;
+  newNode->next = curr;
+  return;
 }
 
-void* LinkedListDelete(LinkedList* self, int key) {
-  Node* prev = NULL;
+int LinkedListPopMaxDataWordId_Freq(LinkedList* self, int* freq) {
   Node* curr = self->head;
+  Node* prev = NULL;
 
-  if (curr == NULL) {
-    return NULL;
-  }
-
-  if (curr->key == key) {
-    self->head = curr->next;
-    void* data = curr->data;
-    free(curr);
-    self->length--;
-    return data;
-  }
-
-  while (key > curr->key) {
+  Node* prevMaxNode = NULL;
+  Node* maxNode = NULL;
+  int max = 0;
+  while (curr != NULL) {
+    if (curr->data > max) {
+      prevMaxNode = prev;
+      maxNode = curr;
+      max = curr->data;
+    }
     prev = curr;
     curr = curr->next;
-    if (curr == NULL) {
-      return NULL;
-    }
-    if (key == curr->key) {
-      prev->next = curr->next;
-      void* data = curr->data;
-      free(curr);
-      self->length--;
-      return data;
-    }
   }
-  return NULL;
+
+  int wordId = -1;
+  if (maxNode != NULL) {
+    wordId = maxNode->key;
+    *freq = maxNode->data;
+
+    if (prevMaxNode == NULL) {
+      self->head = maxNode->next;
+    } else {
+      prevMaxNode->next = maxNode->next;
+    }
+
+    free(maxNode);
+  }
+  return wordId;
 }
 
-void* LinkedListSearch(LinkedList* self, int key) {
-  Node* curr = self->head;
-  if (curr == NULL) {
-    return NULL;
-  } else if (key < 0) {
-    return NULL;
-  }
-
-  if (curr->key == key) {
-    return curr->data;
-  } else if (curr->key > key) {
-    return NULL;
-  }
-
-  while (key > curr->key) {
-    curr = curr->next;
-    if (curr == NULL) {
-      return NULL;
-    }
-    if (key == curr->key) {
-      return curr->data;
-    }
-  }
-  return NULL;
-}
-
-int LinkedListGetKeyByIndex(LinkedList* self, int index) {
+int LinkedListPopHead_Distance(LinkedList* self) {
   Node* curr = self->head;
   if (curr == NULL) {
     return -1;
   }
 
-  if (index > self->length - 1) {
-    return -1;
-  }
+  self->head = curr->next;
 
-  for (int i = 0; i < index; ++i) {
-    if (curr->next == NULL) {
-      return -1;
-    }
-    curr = curr->next;
-  }
-  return curr->key;
-}
-
-void* LinkedListGetDataByIndex(LinkedList* self, int index) {
-  return self->Search(self, self->GetKeyByIndex(self, index));
+  int wordId = curr->data;
+  free(curr);
+  return wordId;
 }

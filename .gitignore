@@ -175,3 +175,5 @@ vignettes/*.pdf
 
 build/
 *.txt
+*.index
+final_assignment/final.zip

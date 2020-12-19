@@ -6,28 +6,23 @@
 
 typedef struct __Node {
   int key;
-  void* data;
+  int data;
   struct __Node* next;
 } Node;
 
 typedef struct __LinkedList {
   Node* head;
-  int length;
 
-  COMPARE (*Compare)(void*, void*);
-
-  bool (*Insert)(struct __LinkedList*, int, void*);
-  void* (*Delete)(struct __LinkedList*, int);
-  void* (*Search)(struct __LinkedList*, int);
-  int (*GetKeyByIndex)(struct __LinkedList*, int);
-  void* (*GetDataByIndex)(struct __LinkedList*, int);
+  void (*UpdateOrInsert_Freq)(struct __LinkedList*, int);
+  void (*Insert_Distance)(struct __LinkedList*, int, int);
+  int (*PopMaxDataWordId_Freq)(struct __LinkedList*, int*);
+  int (*PopHead_Distance)(struct __LinkedList*);
 } LinkedList;
 
-LinkedList* NewLinkedList(void*);
+LinkedList* NewLinkedList();
 
-bool LinkedListInsert(LinkedList*, int, void*);
-void* LinkedListDelete(LinkedList*, int);
-void* LinkedListSearch(LinkedList*, int);
-int LinkedListGetKeyByIndex(LinkedList*, int);
-void* LinkedListGetDataByIndex(LinkedList*, int);
+void LinkedListUpdateOrInsert_Freq(LinkedList*, int);
+void LinkedListInsert_Distance(LinkedList*, int, int);
+int LinkedListPopMaxDataWordId_Freq(LinkedList*, int*);
+int LinkedListPopHead_Distance(LinkedList*);
 #endif
