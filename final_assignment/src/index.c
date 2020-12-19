@@ -18,14 +18,7 @@ int main(int argc, char* argv[]) {
       char distFileName[100] = {
           0,
       };
-      strcpy(distFileName, argv[2]);
-      strcat(distFileName, "/");
-      char twoGram[3] = {
-          0,
-      };
-      sprintf(twoGram, "%c%c\0", (char)i, (char)j);
-      strcat(distFileName, twoGram);
-      strcat(distFileName, ".txt");
+      sprintf(distFileName, "%s/%c%c.txt", argv[2], (char)i, (char)j);
 
       FILE* indexFile = fopen(distFileName, "w");
       fprintf(indexFile, "\0");
@@ -47,17 +40,16 @@ int main(int argc, char* argv[]) {
       char distFileName[100] = {
           0,
       };
-      strcpy(distFileName, argv[2]);
-      strcat(distFileName, "/");
-      char twoGram[3] = {
-          0,
-      };
-      sprintf(twoGram, "%c%c\0", buffer[i], buffer[i + 1]);
-      strcat(distFileName, twoGram);
-      strcat(distFileName, ".txt");
+      sprintf(distFileName, "%s/%c%c.txt", argv[2], buffer[i], buffer[i + 1]);
 
       if (!IsExists(distFileName, buffer)) {
         FILE* indexFile = fopen(distFileName, "a");
+        if (indexFile == NULL) {
+          PrintError("Failed to open file");
+          continue;
+        }
+        setvbuf(indexFile, NULL, _IONBF, 0);
+        // printf("%s\n", buffer);
         fprintf(indexFile, "%s\n", buffer);
         fclose(indexFile);
       }
