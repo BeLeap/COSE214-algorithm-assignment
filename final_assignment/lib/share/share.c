@@ -20,6 +20,7 @@ LinkedList* getWordsFromFile(FILE* wordsFile) {
     String* word = NewString(buffer);
     words->Insert(words, count, (void*)word);
     count++;
+    printf("%s\n", word->value);
   }
 
   fclose(wordsFile);

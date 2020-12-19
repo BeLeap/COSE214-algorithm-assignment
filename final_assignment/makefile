@@ -6,19 +6,13 @@ $(TARGET): $(OBJS)
 
 all: index search
 
-index: src/index.o lib/share/share.o lib/general/general.o lib/linkedlist/linkedlist.o lib/string/string.o
-	gcc -o index src/index.o lib/share/share.o lib/general/general.o lib/linkedlist/linkedlist.o lib/string/string.o
+index: src/index.o lib/general/general.o
+	gcc -o index src/index.o lib/general/general.o
 
 search: src/search.o lib/share/share.o lib/general/general.o lib/linkedlist/linkedlist.o lib/string/string.o
 	gcc -o search src/search.o lib/share/share.o lib/general/general.o lib/linkedlist/linkedlist.o lib/string/string.o
 
-share.o: lib/share/share.h lib/share/share.c
 general.o: lib/general/general.h lib/general/general.c
-vector.o: lib/vector/vector.h lib/vector/vector.c
-avl.o: lib/avl/avl.h lib/avl/avl.c
-linkedlist.o: lib/linkedlist/linkedlist.h lib/linkedlist/linkedlist.c
-string.o: lib/string/string.h lib/string/string.c
-dictionary.o: lib/dictionary/dictionary.h lib/dictionary/dictionary.c
 
 index.o: src/index.c
 search.o: src/search.c

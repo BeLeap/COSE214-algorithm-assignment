@@ -4,12 +4,8 @@
 #include <string.h>
 
 #include "../lib/general/general.h"
-#include "../lib/linkedlist/linkedlist.h"
-#include "../lib/share/share.h"
-#include "../lib/string/string.h"
 
-LinkedList* generate2GramWordList(LinkedList*, LinkedList*);
-bool write2GramWordsListToFile(LinkedList*, char*);
+bool IsExists(char*, char*);
 
 int main(int argc, char* argv[]) {
   if (argc != 3) {
@@ -17,44 +13,73 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  LinkedList* words = getWordsFromFile(fopen(argv[1], "r"));
-  PrintInfo("File read completed");
+  for (int i = (int)'a'; i <= 'z'; ++i) {
+    for (int j = (int)'a'; j <= 'z'; ++j) {
+      char distFileName[100] = {
+          0,
+      };
+      strcpy(distFileName, argv[2]);
+      strcat(distFileName, "/");
+      char twoGram[3] = {
+          0,
+      };
+      sprintf(twoGram, "%c%c\0", (char)i, (char)j);
+      strcat(distFileName, twoGram);
+      strcat(distFileName, ".txt");
 
-  LinkedList* twoGramList = generate2GramList();
-  PrintInfo("Generate gram list completed");
-
-  LinkedList* twoGramWordsList = generate2GramWordList(twoGramList, words);
-  PrintInfo("Generate gram word list completed");
-
-  if (!write2GramWordsListToFile(twoGramWordsList, argv[2])) {
-    return 1;
+      FILE* indexFile = fopen(distFileName, "w");
+      fprintf(indexFile, "\0");
+      fclose(indexFile);
+    }
   }
+
+  FILE* dictionary = fopen(argv[1], "r");
+
+  while (true) {
+    if (feof(dictionary)) {
+      break;
+    }
+
+    char buffer[100];
+    fscanf(dictionary, "%s", buffer);
+
+    for (int i = 0; i < strlen(buffer) - 1; ++i) {
+      char distFileName[100] = {
+          0,
+      };
+      strcpy(distFileName, argv[2]);
+      strcat(distFileName, "/");
+      char twoGram[3] = {
+          0,
+      };
+      sprintf(twoGram, "%c%c\0", buffer[i], buffer[i + 1]);
+      strcat(distFileName, twoGram);
+      strcat(distFileName, ".txt");
+
+      if (!IsExists(distFileName, buffer)) {
+        FILE* indexFile = fopen(distFileName, "a");
+        fprintf(indexFile, "%s\n", buffer);
+        fclose(indexFile);
+      }
+    }
+  }
+
+  fclose(dictionary);
 
   return 0;
 }
 
-bool write2GramWordsListToFile(LinkedList* twoGramWordsList, char* dirname) {
-  char listFileName[100];
-  LinkedList* twoGram;
-  for (int i = 0; (twoGram = twoGramWordsList->GetDataByIndex(twoGramWordsList,
-                                                              i)) != NULL;
-       ++i) {
-    strcpy(listFileName, "\0");
-    strcat(listFileName, dirname);
-    char fileId[5];
-    sprintf(fileId, "%d", i);
-    strcat(listFileName, "/");
-    strcat(listFileName, fileId);
-    strcat(listFileName, ".txt");
-    FILE* wordListFile = fopen(listFileName, "w");
-
-    fprintf(wordListFile, "%d\n", i);
-
-    int key;
-    for (int j = 0; (key = twoGram->GetKeyByIndex(twoGram, j)) != -1; ++j) {
-      fprintf(wordListFile, "%d\n", key);
+bool IsExists(char* filename, char* word) {
+  FILE* fp = fopen(filename, "r");
+  while (true) {
+    if (feof(fp)) {
+      return false;
     }
 
-    fclose(wordListFile);
+    char buffer[100];
+    fscanf(fp, "%s", buffer);
+    if (!strcmp(buffer, word)) {
+      return true;
+    }
   }
 }

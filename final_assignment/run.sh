@@ -1,6 +1,5 @@
 #!/bin/bash
 
-pwd
 make
-./index resource/test.txt resource/dist
+./index resource/words.txt resource/dist
 make clear
