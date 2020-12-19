@@ -27,6 +27,8 @@ int main(int argc, char* argv[]) {  // indexFile
     return 1;
   }
 
+  FILE* wordIdFile = fopen("word_id.txt", "r");
+
   printf("Query Spelling Correction - Press Ctrl-C to exit");
   while (true) {
     printf(">> ");
@@ -36,7 +38,7 @@ int main(int argc, char* argv[]) {  // indexFile
     for (int i = 0; i < strlen(input) - 1; ++i) {
       char indexFileName[100];
       sprintf(indexFileName, "%s/%c%c.txt", argv[1], input[i], input[i + 1]);
-      FILE* indexFile = fopen(indexFileName, "r");
+      FILE* indexFile = fopen(indexFileName, "rb");
       if (indexFile == NULL) {
         PrintError("Failed to open file");
         return 1;
@@ -47,51 +49,13 @@ int main(int argc, char* argv[]) {  // indexFile
           break;
         }
 
-        int index = 0;
-        fscanf(indexFile, "%d", &index);
+        int wordId = 0;
+        fread(&wordId, sizeof(int), 1, indexFile);
       }
       fclose(indexFile);
     }
   }
 }
-
-// int CheckFrequency(char* word) {
-//   FILE* freqFile = fopen("freq.txt", "r");
-//   FILE* tempFile = fopen("temp.txt", "w");
-
-//   bool found = false;
-//   int max_freq = 0;
-//   while (true) {
-//     if (feof(freqFile)) {
-//       break;
-//     }
-
-//     char buffer[100];
-//     int freq = 0;
-//     fscanf(freqFile, "%s %d", buffer, &freq);
-//     if (freq > max_freq) max_freq = freq;
-//     if (buffer == word) {
-//       freq++;
-//       found = true;
-//       if (freq > max_freq) max_freq = freq;
-//       fprintf(tempFile, "%s %d", buffer, freq);
-//       break;
-//     }
-//     fprintf(tempFile, "%s %d", buffer, freq);
-//   }
-
-//   if (found == false) {
-//     fprintf(tempFile, "%s %d", word, 1);
-//   }
-
-//   fclose(freqFile);
-//   fclose(tempFile);
-
-//   remove("freq.txt");
-//   rename("temp.txt", "freq.txt");
-
-//   return max_freq;
-// }
 
 ////////////////////////////////////////////////////////////////////////////////
 // 세 정수 중에서 가장 작은 값을 리턴한다.

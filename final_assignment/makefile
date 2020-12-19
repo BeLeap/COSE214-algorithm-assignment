@@ -20,7 +20,8 @@ search.o: src/search.c
 clear_out:
 	rm *.txt
 
-clear: clear_out
+clear:
 	find . -type f -name '*.o' -delete
 	rm index
 	rm search
+	make clear_out

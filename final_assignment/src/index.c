@@ -23,11 +23,8 @@ int main(int argc, char* argv[]) {
       fclose(fopen(indexFileName, "w"));
     }
   }
-  remove("word_id.txt");
-  fclose(fopen("word_id.txt", "w"));
 
   FILE* dictionary = fopen(argv[1], "r");
-
   FILE* wordIdFile = fopen("word_id.txt", "w");
 
   int count = 0;
@@ -46,21 +43,22 @@ int main(int argc, char* argv[]) {
           0,
       };
       sprintf(indexFileName, "%c%c.txt", buffer[i], buffer[i + 1]);
-      printf("%s\n", indexFileName);
+      FILE* indexFile = fopen(indexFileName, "a+b");
 
       if (!IsExists(indexFileName, count)) {
-        FILE* indexFile = fopen(indexFileName, "a");
         if (indexFile == NULL) {
-          PrintError("Failed to open file");
-          continue;
+          fprintf(stderr, "failed to open %s\n", indexFileName);
+          perror("error");
+          return 1;
         }
-        fprintf(indexFile, "%d\n", count);
-        fclose(indexFile);
+        fwrite(&count, sizeof(int), 1, indexFile);
       }
+      fclose(indexFile);
     }
   }
 
   fclose(dictionary);
+  fclose(wordIdFile);
 
   return 0;
 }
@@ -77,7 +75,7 @@ bool IsExists(char* filename, int wordId) {
     }
 
     int buffer;
-    fscanf(fp, "%d", &buffer);
+    fread(&buffer, sizeof(int), 1, fp);
     if (buffer == wordId) {
       return true;
     }
