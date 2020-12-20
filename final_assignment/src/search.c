@@ -23,23 +23,41 @@ int CheckFrequency(char*);
 void FindWord(FILE*, int, char[]);
 int min_editdistance(char* str1, char* str2);
 
-int main(int argc, char* argv[]) {  // indexFile
+int freqList[5000000];
+char wordList[5000000][100];
+
+int main(void) {  // indexFile
   FILE* wordIdFile = fopen("word_id.txt", "r");
+  int* distanceList = (int*)malloc(sizeof(int) * 5000000);
+
+  while (true) {
+    if (feof(wordIdFile)) {
+      break;
+    }
+
+    char buff[100];
+    int id;
+    fscanf(wordIdFile, "%s %d", buff, &id);
+    strcpy(wordList[id], buff);
+  }
 
   printf("Query Spelling Correction - Press Ctrl-C to exit\n");
   while (true) {
+    for (int i = 0; i < 5000000; ++i) {
+      freqList[i] = 0;
+      distanceList[i] = -1;
+    }
     printf(">> ");
     char input[100];
     scanf("%s", input);
-
-    LinkedList* freqList = NewLinkedList();
 
     for (int i = 0; i < strlen(input) - 1; ++i) {
       char indexFileName[100];
       sprintf(indexFileName, "%c%c.index", input[i], input[i + 1]);
       // clang-format off
-      printf(ANSI_COLOR_YELLOW "[!] " ANSI_COLOR_GREEN "INFO: Processing %c%c\n" ANSI_COLOR_RESET,
-             input[i], input[i + 1]);
+      // printf(ANSI_COLOR_YELLOW "[!] " ANSI_COLOR_GREEN "INFO: Processing %c%c\n" ANSI_COLOR_RESET,
+      //        input[i], input[i + 1]);
+      // printf("Processing %c%c ", input[i], input[i + 1]);
       // clang-format on
       FILE* indexFile = fopen(indexFileName, "rb");
       if (indexFile == NULL) {
@@ -49,11 +67,9 @@ int main(int argc, char* argv[]) {  // indexFile
 
       while (true) {
         int wordId = 0;
-        int temp = fread(&wordId, sizeof(int), 1, indexFile);
-        // printf("found %d\n", wordId);
-        if (temp == 1) {
+        if (fread(&wordId, sizeof(int), 1, indexFile) == 1) {
           if (wordId == 0) continue;
-          freqList->UpdateOrInsert_Freq(freqList, wordId);
+          freqList[wordId]++;
         } else {
           break;
         }
@@ -61,49 +77,56 @@ int main(int argc, char* argv[]) {  // indexFile
       fclose(indexFile);
     }
 
-    LinkedList* distanceList = NewLinkedList();
     int count = 0;
     int prev_freq = 0;
     while (count < 10) {
-      int freq = 0;
-      char buffer[100];
-      int wordId = freqList->PopMaxDataWordId_Freq(freqList, &freq);
-      if (wordId == -1) {
-        while (count < 10) {
-          int minDistanceWordId = distanceList->PopHead_Distance(distanceList);
-          if (minDistanceWordId == -1) {
-            break;
-          }
-          FindWord(wordIdFile, minDistanceWordId, buffer);
-          printf("%s\n", buffer);
-          count++;
+      int freq = -1;
+      int wordId = 0;
+      for (int i = 0; i < 5000000; ++i) {
+        if (freq < freqList[i] && freqList[i] != -1) {
+          freq = freqList[i];
+          wordId = i;
         }
-        break;
       }
+      freqList[wordId] = -1;
+      if (wordId == 0) break;
 
-      FindWord(wordIdFile, wordId, buffer);
-      int distance = min_editdistance(input, buffer);
-      distanceList->Insert_Distance(distanceList, wordId, distance);
-      int temp = min_editdistance(input, buffer);
+      int distance = min_editdistance(input, wordList[wordId]);
+      distanceList[wordId] = distance;
 
       if (prev_freq != freq && prev_freq != 0) {
         while (count < 10) {
-          int minDistanceWordId = distanceList->PopHead_Distance(distanceList);
-          if (minDistanceWordId == -1) {
-            break;
+          int minDistanceWordId = 0;
+          int min = INT_MAX;
+          for (int i = 0; i < 5000000; ++i) {
+            if (distanceList[i] < min && distanceList[i] != -1) {
+              minDistanceWordId = i;
+              min = distanceList[i];
+            }
           }
-          FindWord(wordIdFile, minDistanceWordId, buffer);
-          printf("%s\n", buffer);
+          distanceList[minDistanceWordId] = -1;
+          if (minDistanceWordId == 0) break;
+          printf("%s, %lf\n", wordList[minDistanceWordId],
+                 1 - ((float)min / strlen(input)));
           count++;
         }
       }
       prev_freq = freq;
     }
-    free(freqList);
-    int temp = 0;
-    while ((temp = distanceList->PopHead_Distance(distanceList) != -1))
-      ;
-    free(distanceList);
+    while (count < 10) {
+      int minDistanceWordId = 0;
+      int min = INT_MAX;
+      for (int i = 0; i < 5000000; ++i) {
+        if (distanceList[i] < min && distanceList[i] != -1) {
+          minDistanceWordId = i;
+          min = distanceList[i];
+        }
+      }
+      distanceList[minDistanceWordId] = -1;
+      printf("%s, %lf\n", wordList[minDistanceWordId],
+             1 - ((float)min / strlen(input)));
+      count++;
+    }
   }
 
   fclose(wordIdFile);
