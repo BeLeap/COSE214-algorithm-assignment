@@ -16,9 +16,6 @@
 
 #define INT_MAX 2147483646
 
-#include "../lib/general/general.h"
-#include "../lib/linkedlist/linkedlist.h"
-
 int CheckFrequency(char*);
 void FindWord(FILE*, int, char[]);
 int min_editdistance(char* str1, char* str2);
@@ -54,11 +51,6 @@ int main(void) {  // indexFile
     for (int i = 0; i < strlen(input) - 1; ++i) {
       char indexFileName[100];
       sprintf(indexFileName, "%c%c.index", input[i], input[i + 1]);
-      // clang-format off
-      // printf(ANSI_COLOR_YELLOW "[!] " ANSI_COLOR_GREEN "INFO: Processing %c%c\n" ANSI_COLOR_RESET,
-      //        input[i], input[i + 1]);
-      // printf("Processing %c%c ", input[i], input[i + 1]);
-      // clang-format on
       FILE* indexFile = fopen(indexFileName, "rb");
       if (indexFile == NULL) {
         PrintError("Failed to open file");

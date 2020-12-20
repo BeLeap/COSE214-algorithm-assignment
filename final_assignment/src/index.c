@@ -3,13 +3,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../lib/general/general.h"
-
 int wordList[5000000][676];
 
 int main(int argc, char* argv[]) {
   if (argc != 2) {
-    PrintError("Not enough arguments");
+    fprintf(stderr, "Not enough arguments");
     return 1;
   }
 

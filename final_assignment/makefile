@@ -6,14 +6,11 @@ $(TARGET): $(OBJS)
 
 all: index search
 
-index: src/index.o lib/general/general.o
-	gcc -o index src/index.o lib/general/general.o
+index: src/index.o
+	gcc -o index src/index.o
 
-search: src/search.o lib/general/general.o lib/linkedlist/linkedlist.o
-	gcc -o search src/search.o lib/general/general.o lib/linkedlist/linkedlist.o
-
-general.o: lib/general/general.h lib/general/general.c
-linkedlist.o: lib/linkedlist/linkedlist.h lib/linkedlist/linkedlist.c
+search: src/search.o
+	gcc -o search src/search.o
 
 index.o: src/index.c
 search.o: src/search.c
