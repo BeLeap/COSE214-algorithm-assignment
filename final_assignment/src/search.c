@@ -53,7 +53,7 @@ int main(void) {  // indexFile
       sprintf(indexFileName, "%c%c.index", input[i], input[i + 1]);
       FILE* indexFile = fopen(indexFileName, "rb");
       if (indexFile == NULL) {
-        PrintError("Failed to open file");
+        fprintf(stderr, "Failed to open file");
         return 1;
       }
 
